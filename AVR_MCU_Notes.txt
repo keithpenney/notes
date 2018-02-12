@@ -1,0 +1,27 @@
+Atmel AtMega328P AVR Microcontroller Notes:
+
+
+USART:
+    The Universal Synchronous/Asynchronous Receiver Transmitter can transmit/receive both synch and asynch serial data
+    with 5, 6, 7, 8, or 9 data bits and 1 or 2 stop bits.
+    Includes a high-resolution BAUD rate generator.
+    The USART0 i/o pins are on PD1 (Tx) and PD0 (Rx)
+
+    To enable to USART0, the Power Reduction Register (PRR) must have a 0 in the corresponding bit, PRR.PRUSART0
+
+    Transmitter:
+        Single write buffer.
+        Serial shift register.
+        Parity generator.
+        Control logic.
+
+    Receiver:
+        Clock and data recovery units.
+        Two-level receive buffer UDRn.
+        Parity checker.
+        Control logic.
+        Shift register.
+        Can detect frame error, data overrun, and parity errors.
+
+    Pins:
+        XCKn        External clock only used for synchronous transfer mode
