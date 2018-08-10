@@ -1,11 +1,3 @@
-# hello_world
-What's this github all about?
+# Notes
 
-I was told to put stuff in you.
-
-Well, here's some stuff.
-
-I hope you're happy.
-
-Sincerely,
-Keith
+Different notes about different things that didn't belong anywhere else but didn't need their own category.
