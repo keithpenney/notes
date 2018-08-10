@@ -20,6 +20,8 @@ Eagle interprets certain characters in names as special syntax:
     name@X                  If we have multiple pins with the same function (but different numbers), we use this syntax
                             to distinguish the pins.  Eagle will ignore the '@X' part of the label in the schematic.
                             'name' is the pin function, 'X' is the pin number.
+    !name                   If a name (e.g. a net name) is proceded by '!', it is interpreted as "active low" and
+                            displayed with an overbar above the name.
 
 Sheets:
     It's handy to break up a big schematic into sheets, each with some unifying function (e.g. voltage rails, cap bank)
@@ -27,3 +29,8 @@ Sheets:
 
 Board Layout:
     SET PAD_NAMES OFF | ON; // Sets pad names off/on in board layout.
+
+
+Eagle User Language Script:
+    Eagle has a built-in user language that looks a lot like C++ for scripting and automating jobs.
+    See the help menu if you're curious.
