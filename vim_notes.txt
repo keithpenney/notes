@@ -1,0 +1,211 @@
+VIM (VI) Text Editor Commands
+
+(vimtutor lessons 1-5. Start at 6)
+
+--- NAVIGATE ---
+
+hjkl = <v^> (same as arrow keys)
+
+0 = move cursor to beginning of line
+
+$ = move cursor to the end of a line
+
+w = move cursor forward 1 word
+
+nw = (where n is an integer) move cursor forward n words
+
+G = "Go" (maybe); moves cursor to end of file
+
+gg = moves cursor to beginning of file
+
+nG = :n = move cursor to line n
+
+:w = 'writeout' (save file)
+
+:w newfile = 'writeout' to file name 'newfile'
+
+:q = quit (exit)
+
+:q = force quit
+
+:wq = writeout and quit (quit and save)
+
+--- SEARCH ---
+
+/thing = search file for "thing" and places cursor at the first instance of "thing"
+
+n = search again (move to next instance)
+    can also type / + <ENTER>
+
+N = search again (move to previous instance)
+    can also type ? + <ENTER>
+
+:set ic = <set option> "ignore case" (case insensitive)
+
+:set noic = <set option> turn off "ignore case" (case sensitive)
+
+:set hls = <set option> "highlight search"
+
+:set nohls = <set option> turn off "highlight search"
+
+--- DELETE ---
+
+x = delete character under the cursor
+
+dw = delete word at the cursor position
+
+de = same as dw as far as I can tell.
+
+n dd = delete n lines starting at the current cursor position
+
+n dw = delete n words to the right of the current cursor position
+
+dnw = same as n dw
+
+
+--- EDITING ---
+
+**Note!  Anything that is deleted is stored in the Vim register and can be pasted.
+**In other words, delete works like cut.
+
+v = enter visual select mode
+
+y = "yank" (copy text hightlighted with v)
+    yw = copy a single word
+    yy = y$ = copy a single line
+
+p = "paste"; past text copied with y
+
+u = undo last command
+
+U = restore current line
+
+Ctrl-R = redo last command
+
+r 'char' = replace a single character with 'char' (e.g. re replaces the character with 'e')
+
+:s/oldword/newword = replace first occurrence of "oldword" in current line with "newword"
+
+    append /g ("global") to replace every occurrence in the current line
+
+:%s/oldword/newword/g = replace every occurrence in the whole file
+
+:#,#s/oldword/newword/g = replace every occurrence between the given line #'s
+
+    append "c" to ask for confirmation before replacing words.
+
+:r = retrieve.  Inserts text from a filename or location.  e.g. :r "filename"
+
+    You can also pipe with this.
+    e.g. :r !ls
+
+--- MULTI-LINE COPY/PASTE ---
+
+Press v to enter visual highlight mode
+
+Press : (you'll see :'<,'> at the bottom left)
+
+Press w "filename" (you'll see :'<,'>w "filename")
+
+Press ENTER to write highlighted text to "filename"
+
+Move the cursor to the destination line
+
+Press :r "filename" to write the contents of "filename" at that cursor position.   Note :r is for "retrieve"
+
+--- INSERT MODE ---
+
+i = enter insert mode at cursor position
+
+A = 'append'; moves cursor one position to the right then enters insert mode
+
+o = insert blank line BELOW cursor, then move cursor to the new blank line and enter insert mode
+
+O = insert blank line ABOVE cursor, then move cursor to the new blank line and enter insert mode
+
+R = goes into replace mode (like insert, but overwrites characters).
+
+cw = ce = "change" to end of word (deletes until end of word then enters insert mode)
+
+c$ = "change" to end of line.
+
+--- CODING TOOLS ---
+
+% = parenthesis matching; highlight a (, {, or [ and hit % to highlight the matching ), }, or ]
+
+--- EDITOR SETTINGS ---
+
+:set SETTINGNAME=VALUE              Set a setting called 'SETTINGNAME' to a value 'VALUE'
+
+:set tabstop=4                      Set the displayed tab size to 4 characters
+
+:set shiftwidth=4                   Set the displayed indent width to 4 characters (not sure how this is different)
+
+                                    Make these settings permanent by adding the lines to your vimrc file.
+
+--- vimrc FILE ---
+
+:e $HOME/.vimrc                     Edit (or create) the user vimrc file (Unix/Linux)
+:e $HOME/_vimrc                     Edit (or create) the user vimrc file (Windows)
+
+--- EXTERNAL COMMANDS ---
+
+: = accept a long command (hit enter to execute)
+
+:!"command" = call an external terminal command
+
+:"char" <CTRL> + D = shows all external commands that start with the char string "char"
+    type <TAB> to complete the command in alphabetical order
+
+--- Vimscript ---
+
+https://www.ibm.com/developerworks/library/l-vim-script-1/index.html
+
+:help vim-script-intro              An introduction to Vimscript (run from inside Vim).
+:help keycodes                      Show a list of keycodes Vim can interpret.
+
+Running Vimscripts:
+    Vim script files are typically given the extension '.vim' and are executed as follows.
+
+    :source /path/to/scriptfile.vim
+
+    Alternatively, you can always run a vimscript command from normal mode, but that takes a lot of typing.
+
+    :call MyFunc(...)               Call some function MyFunc() with args ...
+
+Key Mapping:
+    A common way to run Vim scripts is to map them to a key combination in normal mode.
+
+    :nmap ;s :source /path/to/scriptfile.vim<CR>
+
+    The built-in function 'nmap' (Normal-mode key MAPping) above maps the key combination ;s to the Vim script.
+    Of course, if this line is itself in a Vim script, the leading colon : is dropped.
+    Also note, Vim interprets the character combination "<CR>" as a carriage return.
+
+Vimscript Statement Syntax:
+    Vimscript statements are terminated by a newline character (like Python or Shell scripts).
+    To continue a statement to multiple lines, you use a backslash character BUT!!! it's placed at the start of
+    the NEXT line, not at the end of the PREVIOUS line!!!!  Weiiiiiiird!!!
+
+    To put more than one statement on a single line, the vertical bar | can be used to separate each statement.
+    The vertical bar works pretty much like a newline char.
+
+    Comments:
+        Comments begin with the double-quote character " and persist to the end of the line.
+        This causes trouble!  Since strings also use the double-quote character ", comments are first interpreted as
+        strings if a string is expected at that position.  The solution to this is to place a vertical bar | before
+        the double-quote leading the comment.
+        " - - - Example - - - "
+        "This is a comment
+        echo "this is a string" |" and this is a comment!
+        " - - End Example - - "
+
+Variables:
+    Assignment:
+        Variable assignment uses the keyword 'let'.
+        "- - - Example - - -"
+        let name = "Keef"
+        let age = 12
+        let langs = ['C', 'Python', 'Go', 'VHDL']
+        let favorites = {'color':'blue', 'number':3}
+        "- - End Example - -"
