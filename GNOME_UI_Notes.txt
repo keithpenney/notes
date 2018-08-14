@@ -1,0 +1,7 @@
+Some notes for using Ubuntu's GNOME UI
+and its default programs.
+
+Nautilus (File Explorer):
+    To see/edit the current path in text form type "Ctrl+L"
+
+

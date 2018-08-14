@@ -1,8 +1,21 @@
 VIM (VI) Text Editor Commands
 
-(vimtutor lessons 1-5. Start at 6)
+Description:
+    vim is a text editor with a long, complicated history and lots of legacy quirks.
+    Originally came from "ed" -> "em" -> "ex" -> "vi" -> "vim"
+    Ubiquitously used in the Unix world.
+    Uses two modes: "Normal Mode" and "Insert Mode"
+    "Normal Mode" accepts commands (see below).
+    "Insert Mode" inputs text.
+    Leave "Insert Mode" with the Escape key.
 
---- NAVIGATE ---
+--- HELP ---
+vimtutor	An interactive vim session to learn to use vim
+:help {CMD}	At any point, you can use the ":help" command to learn about any command 'CMD'
+
+=======================================
+-------------- NAVIGATE ---------------
+=======================================
 
 hjkl = <v^> (same as arrow keys)
 
@@ -20,6 +33,30 @@ gg = moves cursor to beginning of file
 
 nG = :n = move cursor to line n
 
+Ctrl+b = Page up (page "B"ackward)
+
+Ctrl+f = Page down (page "F"orward)
+
+H = move cursor to the "highest" line on the screen
+
+M = move cursor to the "middle" line on the screen
+
+L = move cursor to the "lowest" line on the screen
+
+=======================================
+------------ THE VIEWPANE -------------
+=======================================
+
+Ctrl+y = move viewpane up one line
+
+Ctrl+e = move viewpane down one line
+
+zz = move the viewpane to center on the current line
+
+zt = move the viewpane so that the current line is on top
+
+zb = move the viewpane so that the current line is on bottom
+
 :w = 'writeout' (save file)
 
 :w newfile = 'writeout' to file name 'newfile'
@@ -30,7 +67,9 @@ nG = :n = move cursor to line n
 
 :wq = writeout and quit (quit and save)
 
---- SEARCH ---
+=======================================
+--------------- SEARCH ----------------
+=======================================
 
 /thing = search file for "thing" and places cursor at the first instance of "thing"
 
@@ -48,7 +87,9 @@ N = search again (move to previous instance)
 
 :set nohls = <set option> turn off "highlight search"
 
---- DELETE ---
+=======================================
+--------------- DELETE ----------------
+=======================================
 
 x = delete character under the cursor
 
@@ -62,8 +103,9 @@ n dw = delete n words to the right of the current cursor position
 
 dnw = same as n dw
 
-
---- EDITING ---
+=======================================
+---------- CUT, COPY, PASTE -----------
+=======================================
 
 **Note!  Anything that is deleted is stored in the Vim register and can be pasted.
 **In other words, delete works like cut.
@@ -99,7 +141,9 @@ r 'char' = replace a single character with 'char' (e.g. re replaces the characte
     You can also pipe with this.
     e.g. :r !ls
 
---- MULTI-LINE COPY/PASTE ---
+=======================================
+------- VISUAL-MODE COPY/PASTE --------
+=======================================
 
 Press v to enter visual highlight mode
 
@@ -113,7 +157,9 @@ Move the cursor to the destination line
 
 Press :r "filename" to write the contents of "filename" at that cursor position.   Note :r is for "retrieve"
 
---- INSERT MODE ---
+=======================================
+------------ INSERT MODE --------------
+=======================================
 
 i = enter insert mode at cursor position
 
@@ -129,11 +175,15 @@ cw = ce = "change" to end of word (deletes until end of word then enters insert 
 
 c$ = "change" to end of line.
 
---- CODING TOOLS ---
+=======================================
+------------ CODING TOOLS -------------
+=======================================
 
 % = parenthesis matching; highlight a (, {, or [ and hit % to highlight the matching ), }, or ]
 
---- EDITOR SETTINGS ---
+=======================================
+---------- EDITOR SETTINGS ------------
+=======================================
 
 :set SETTINGNAME=VALUE              Set a setting called 'SETTINGNAME' to a value 'VALUE'
 
@@ -143,12 +193,16 @@ c$ = "change" to end of line.
 
                                     Make these settings permanent by adding the lines to your vimrc file.
 
---- vimrc FILE ---
+=======================================
+------------- vimrc FILE --------------
+=======================================
 
 :e $HOME/.vimrc                     Edit (or create) the user vimrc file (Unix/Linux)
 :e $HOME/_vimrc                     Edit (or create) the user vimrc file (Windows)
 
---- EXTERNAL COMMANDS ---
+=======================================
+--------- EXTERNAL COMMANDS -----------
+=======================================
 
 : = accept a long command (hit enter to execute)
 
@@ -157,7 +211,9 @@ c$ = "change" to end of line.
 :"char" <CTRL> + D = shows all external commands that start with the char string "char"
     type <TAB> to complete the command in alphabetical order
 
---- Vimscript ---
+=======================================
+------------- VIMSCRIPT ---------------
+=======================================
 
 https://www.ibm.com/developerworks/library/l-vim-script-1/index.html
 
