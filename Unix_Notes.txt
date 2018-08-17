@@ -1,0 +1,201 @@
+Unix Shell and Environment Notes
+
+General:
+	Tips for working in the typical Unix environment
+	Primarily via a shell (terminal).
+
+Getting Help:
+    Man Pages:
+        Most commands have an entry in the "man pages" (manual) which can be accessed simply by:
+            man CMD
+        where 'CMD' is the command in question.
+        If you don't quite recall the name of the command, you can try the "-k" (keyword) flag which will return a
+        list of command names that match the keyword.
+            man -k KW
+        where 'KW' is the desired keyword.
+
+        Sections:
+            Man pages are broken down into numbered sections.
+            To query a particular section, use:
+                man N CMD
+            where 'N' is the section number (see below) and 'CMD' is the command in question.
+            (1)     User commands
+            (2)     System calls
+            (3)     Higher-level Unix programming library documentation
+            (4)     Device interface and driver information
+            (5)     File descriptions (system configuration files)
+            (6)     Games
+            (7)     File formats, conventions, and encodings (ASCII, suffixes, etc.)
+            (8)     System commands and servers
+
+    Help:
+        The syntax varies from command to command, but you can usually find help by using flags '-h' or '--help'.
+
+    Info/Texinfo:
+        Some projects (primarly GNU) opt for "info" (or "texinfo") pages over man pages.  To view these, try:
+            info CMD
+        where 'CMD' is the command in question.
+
+Shortcuts/Hotkeys/Key Bindings:
+    ctrl + _        Undo the last edit (not the last command)
+    ctrl + t        Swap two characters
+    alt  + t        Swap two words
+    alt  + .        Print last argument from previous command
+    ctrl + x + *    Expand glob/star
+    ctrl + arrow    Move by words (rather than by characters)
+    alt  + f        Move forward one word
+    alt  + b        Move backward one word
+    ctrl + x + ctrl + e     Open the command string in an editor to edit before executing
+    ctrl + e        Move cursor to the end
+    ctrl + a        Move cursor to the beginning
+    ctrl + xx       Move to the opposite end of the line
+    ctrl + u        Cut everything before the cursor
+    ctrl + k        Cut everything after the cursor
+    ctrl + y        Paste from the buffer
+    ctrl + l        Clear screen
+
+Common Commands:
+
+    cat [file]                  Concatenate files or StdIn and print to StdOut or redirect.
+                                Prints contents of 'file' to StdOut.
+    cat > filename              Redirect output from StdIn to 'filename'.  Ctrl+C to terminate.
+    chmod                       Change a file's mode bits (read/write/execute)
+    clear                       Clear the screen.
+    command -V [cmd]            Provide a bit of information about command 'cmd'
+    dpkg -i filename.deb        Install a '.deb' file (always 'sudo' this one).
+    echo                        Print to Standard Out (StdOut)
+                                -e: enable escape sequences; -n: suppress trailing newline;
+    file FILENAME               Returns file type information about file FILENAME
+    find DIR -name FILENAME -print  Prints the location of FILENAME if found in directory DIR
+                                Note!  To use globs in the FILENAME, enclose them in single-quotes ''
+    grep PATTERN [file(s)]      Search for and print out all lines in file(s) matching PATTERN
+    ifconfig [-a | -s | -v]     Show network InterFace connection information (like Windows ipconfig)
+    kill PID                    Terminate a process by its process id (PID).
+                                -STOP: pause a process; -CONT: continue after a pause.
+    less FILENAME               Read the contents of a long file FILENAME broken up into pages.
+    ln -s TARGET LINKNAME       Create a symlink named LINKNAME pointing to TARGET
+    ls [DIR]                    List the contents of the directory DIR.  Defaults to current directory.
+                                -l : 'long' format.  More detail.
+    passwd [USERNAME]           Change the password for user USERNAME.  Defaults to current user.
+    ps                          List currently running processes.
+                                x: only your processes; ax: all processes; u: more info; w: fulll command names
+    pwd                         Print the working (current) directory
+    read [var]                  Get user input in string form. Stores in 'var' if provided, else in $REPLY
+                                -a: read as space-delimited array; 
+    set                         Allows you to set the values of shell options and positional parameters.
+                                Calling bash with flag -a is the same as opening bash then calling 'set -a'
+    seq [begin] [end]           Return a sequence of numbers from 'begin' to 'end'
+    stream                      Stream pixel data from one image source to a destination (very lightweight).
+    sudo                        Do as superuser (requires password)
+    tar                         Archive (zip) or unarchive (unzip) a file.
+                                -z: zip; -c: create; -a: append
+    tr a-z A-Z                  Translate standard input.  Swap all lowercase chars (a-z) in stdin with uppercase (A-Z)
+    uname                       Print system information
+                                -o: OS; -m: machine; -a: all
+    which filename              Returns pathnames of the files by searching PATH
+    whoami                      Returns the current username
+
+Shebang:
+    Shebang scripts start with #! and are typically the first line of a file.
+    These help a Unix-like OS identify the type of file or program associated with it.
+    The Windows world uses only the file extension to determine the type, whereas Unix can alternatively use Shebangs
+
+File Permissions:
+    File permissions can be viewed with a command like "ls -l" and normally show up as something like:
+    -rw-r--r--      # A normal file with user read/write, group read, and other read permissions
+    drwxr-xr-x      # A directory with user read/write/execute, group and other read/execute permissions.
+
+    The first character is the file type.  Common file types:
+        -           A normal file
+        d           A directory
+        l           A symlink
+
+    The next 9 character are 3 groups of 3 characters each: user 'rwx', group 'rwx', other 'rwx'
+    'user' is the current user (you). 'group' is the current user's group. 'other' is everyone else.
+    If the letter is present, the permission is granted, otherwise the letter is replaced by a hyphen '-'
+
+    chmod:
+        To modify file permissions, use the 'chmod' command.  Examples:
+            chmod u+x FILE      # Add execution permissions for FILE for the user.
+            chmod g-w FILE      # Remove write permissions for FILE for the group.
+            chmod go-rw FILE    # Remove read/write permissions for FILE for group and others.
+            chmod 644 FILE      # Set user read/write, group/other read permissions for FILE.
+            chmod 600 FILE      # Set user read/write, group/other none permissions for FILE.
+            chmod 755 FILE      # Set user read/write/execute, group/other read/execute permissions for FILE.
+
+        When you see 'chmod' used with numbers, it's like a bitmask in octal form.  The group of 9 letters is treated
+        like a binary number written in octal form where each trio of letters is one octal digit.
+        Example:
+            rwx = 7
+            --x = 1
+            r-x = 5
+            rw- = 6
+
+    umask:
+        You can also specify a common file permission set to assign to all new files created during a session.
+        'umask' takes the NEGATION of the 3-digit octal argument discussed in 'chmod' above (it's a MASK!).
+        Example:
+            umask 077           # All permissions for the user, none for group/other
+            umask 022           # All permissions for the user, read/execute (no write) for group/other
+        Note that it only applies to subsequently created files during a single session.
+
+Symbolic Links (Symlinks):
+    A symbolic link (symlink) is a file that points to another file or directory somewhere else on the disk
+    (like a shortcut in Windows).
+    You can see where a symlink points in the output of 'ls -l' (e.g. somedir -> some/other/dir)
+    Symlinks can be confusing because their name does not necessarily say anything about the destination.
+    In fact, the destination may not even exist!  This causes confusing output for programs trying to use
+    the symlink.
+    Also, the link can point to any type of file/directory (including another symlink!).
+
+    ln -s:
+        To create a symbolic link, make sure to use 'ln -s' (without the -s flag, you create a hardlink).
+        Keep the syntax in mind:
+            ln -s TARGET LINKNAME
+        Reversing the order of the arguments can cause some very confusing results.
+
+Archiving and Compression:
+    tar:
+        An archive is a bunch of files smooshed together into a single file.  The name 'tar' stands for "Tape Archive"
+        as it was originally written for copying a directory structure to a tape drive.
+        'tar' is used with a variety of flags to control its behavior.  The single-character flags can be concatenated
+        and do not need to be preceded with a '-'.  This is why 'tar' is often followed by an opaque jumble of
+        characters preceding the filename.
+        -c      Create a new archive
+        -A      Append tar files to an existing archive
+        -r      Append files to the end of an existing archive
+        -t      List the contents of an archive
+        -u      Only append files newer than copy in archive
+        -x      Extract files from an existing archive
+        -z      Gzip compress after archiving
+
+        Some flags require an argument; these must be at the end of the string of flags or should be used on their own
+        or in their long form (see man(1) tar).
+        
+        -f FILENAME     Use the archive FILENAME
+        
+        Example:
+            tar czf MyArchive.tar.gz FILE1 FILE2 FILE3  # Combine files into compressed archive MyArchive.tar.gz
+            tar xzf MyArchive.tar.gz                    # Extract files from existing archive MyArchive.tar.gz
+
+    gzip:
+        GNU zip (gzip) is a file compression tool.  It takes as its input a single uncompressed file, and outputs
+        a compressed file, appending the '.gz' extension.
+        To unzip, a separate command name 'gunzip' is used.  Example:
+            gzip FILENAME       # zip FILENAME to FILENAME.gz
+            gunzip FILENAME.gz  # unzip FILENAME.gz to FILENAME
+
+Job Control:
+    You can pause a process by pressing "Ctrl+Z" during operation.
+    Once paused, a process can be sent to the background with 'bg' or brought to the foreground with 'fg'
+    You can immediately cast a process into the background with the ampersand "&".  Example:
+        gunzip myFile.gz &
+    This will print the process id and then immediately return you to the prompt, running 'gunzip myFile.gz'
+    in the background.
+    Note that it might be helpful to redirect output to a file so that it doesn't bug you from the background.
+
+
+Handy Examples:
+    # Search /.../words for pattern 'ie' (returns a lot!) - pipe to 'less' to paginate
+    grep ie /usr/share/dict/words | less
+
