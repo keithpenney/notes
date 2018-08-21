@@ -62,6 +62,7 @@ Common Commands:
     chmod                       Change a file's mode bits (read/write/execute)
     clear                       Clear the screen.
     command -V [cmd]            Provide a bit of information about command 'cmd'
+    dmesg                       List the last kernel messages (long output! Pipe to 'less'?)
     dpkg -i filename.deb        Install a '.deb' file (always 'sudo' this one).
     echo                        Print to Standard Out (StdOut)
                                 -e: enable escape sequences; -n: suppress trailing newline;
@@ -76,6 +77,7 @@ Common Commands:
     ln -s TARGET LINKNAME       Create a symlink named LINKNAME pointing to TARGET
     ls [DIR]                    List the contents of the directory DIR.  Defaults to current directory.
                                 -l : 'long' format.  More detail.
+    mount -t TYPE DEVICE DIR    Mount a DEVICE of type TYPE to the file tree at DIR.
     passwd [USERNAME]           Change the password for user USERNAME.  Defaults to current user.
     ps                          List currently running processes.
                                 x: only your processes; ax: all processes; u: more info; w: fulll command names
@@ -95,6 +97,21 @@ Common Commands:
     which filename              Returns pathnames of the files by searching PATH
     whoami                      Returns the current username
 
+Display Modes:
+    Unix/Linux systems have two primary display modes: text mode and graphics mode (X Window System Server)
+    Historically, systems booted directly into text mode, but now most distros hide text mode during boot with
+    a splash screen and switch to full graphics mode at the end of the boot process.
+
+    Virtual Consoles:
+        When a modern Linux system boots, several virtual consoles start and normally just wait for a login.
+        Some of these can also be processing a 'getty' command (see below). 
+        To switch from a GUI to /dev/tty1 (the first virtual console), press CTRL+ALT+F1 then to switch from
+        a virtual console in text mode to any other, press ALT+F* where 'F*' is F1, F2, F3, F4, etc...
+        
+        You can also switch between virtual consoles with 'chvt *' where '*' is 1, 2, 3, 4, etc...
+        Note:
+            On kpenney-z97, the GUI is running in /dev/tty7, tty1-6 are all idling at a login prompt.
+
 Shebang:
     Shebang scripts start with #! and are typically the first line of a file.
     These help a Unix-like OS identify the type of file or program associated with it.
@@ -109,6 +126,10 @@ File Permissions:
         -           A normal file
         d           A directory
         l           A symlink
+        b           Block device: a device which can be indexed for random access (e.g. hard drive)
+        c           Character device: a device which interacts by read/write characters (e.g. serial port)
+        p           Pipe device: an I/O stream to another process rather than a hardware driver
+        s           Socket device: an IPC interface (e.g. Unix domain/BSD socket)
 
     The next 9 character are 3 groups of 3 characters each: user 'rwx', group 'rwx', other 'rwx'
     'user' is the current user (you). 'group' is the current user's group. 'other' is everyone else.
@@ -184,6 +205,88 @@ Archiving and Compression:
         To unzip, a separate command name 'gunzip' is used.  Example:
             gzip FILENAME       # zip FILENAME to FILENAME.gz
             gunzip FILENAME.gz  # unzip FILENAME.gz to FILENAME
+
+File I/O:
+    Unix allows many modes of file interface (some described above).  Here are some helpful programs/commands
+    to make file I/O easier.
+
+    dd:
+        'dd' reads from an input file and writes to an output file.  It's helpful for both file and device I/O.
+        Since 'dd' will read/write whatever you give it, it's easy to mess up and corrupt a file.  Be careful!
+        The 'dd' syntax comes from IBM Job Control Language, so it's a little wonky. Example:
+            dd if=/dev/zero of=my_new_file bs=1024 count=1
+
+        Arguments:
+            'if' is input file
+            'of' is output file
+            'bs' is block size (how many bytes to write per file operation).  The 'bs' argument can also use
+                 key-letters 'b' = 512 and 'k' = 1024 instead of pure bytes
+            'ibs' and 'obs' are the input block size and output block size if different (if same, use 'bs')
+            'count' is the total number of blocks to copy
+            'skip' is the number of blocks in the input file to skip past before copying
+ 
+Device I/O:
+    In the Unix world, the kernel presents a user-space interface to a device to make it accessible to the user.
+    This interface can take a variety of forms based on device functionality or historical legacy.
+    Devices are assigned a major number and a minor number which help identify the device.  These can be found in
+    several places including '/proc/devices' and 'ls -l /dev'
+
+    Device Files (/dev):
+        Many devices have simple interface files which provide file-like I/O operations (e.g. read/write/seek) to
+        the user while the kernel and device drivers handle the translation to the device's API.
+        These device files are typically found in the directory /dev.
+        Example: to write characters to a character device, you can simply redirect from StdOut.
+            echo Hello Device! > /dev/null
+            # /dev/null is a bin-bucket (write-only memory, black hole, etc...)
+
+    Common Devices and Naming Conventions:
+        /dev/sd*        Hard disk drives
+        /dev/sr         CD/DVD drives
+        /dev/hd*        Hard disk drives using PATA legacy compatibility (check BIOS to switch to SATA)
+        /dev/tty*       Terminals and virtual terminals
+        /dev/pts/*      Pseudoterminals
+        /dev/tty        The controlling terminal of the current process
+        /dev/ttyS*      Serial ports (Windows COM1 would be /dev/ttyS0, COM2 would be /dev/ttyS1, etc.)
+        /dev/ttyUSB*    USB-to-serial adapters.  Also show up as /dev/ttyACM*
+        /dev/lp*        Parallel ports (old school DB25 style).  Can interface directly with cat > /dev/lp0
+        /dev/snd/*      Audio/sound devices (part of the "Advanced Linux Sound Architecture" (ALSA) system)
+        /dev/dsp        A legacy sound device interface (see "Open Sound System")
+
+    sysfs Device Path (/sys/devices):
+        For many devices, a simple device file interface does not allow exploitation of the device's full
+        capabilities.  For this reason (and others), an alternate interface is often provided with a sysfs
+        device path.
+        The actual sysfs device path can be stupidly long and unintelligible, but helpful symlinks are normally
+        provided to find the actual interface path (e.g. /sys/block contains symlinks to all block devices).
+        You can also use 'udevadm' to find the device path (see below).
+
+    udev and devtmpfs:
+        In the past, new Linux versions would add device compatibility and assign new maj/min numbers which
+        would break the /dev filesystem. Then /dev would thus have to be rebuilt for every new release.
+        To simplify this process, 'udev' and 'devtmpfs' were created.
+
+        devtmpfs:
+            The 'devtmpfs' filesystem is implemented via a collection of kernel-space and user-space programs
+            and daemons which keep the hardware, device files, and device paths synchronized.
+            Because the kernel needs device files early in the boot process (before 'udev' can start), the
+            job of maintaining the 'devtmpfs' filesystem is split between kernel-space and user-space programs.
+            Simple example:
+                New hardware is detected by the kernel.
+                The kernel sends a 'uevent' notification to 'udevd' with the device's attributes.
+                'udevd' loads all the attributes and consults its rules to determine actions to take.
+                    Default rules are in /lib/udev/rules.d, overrides are in /etc/udev/rules.d
+                'udevd' creates symlinks in /dev and elsewhere and does other stuff based on the rules
+                and device attributes. 
+        udevadm:
+            To query device details, the 'udevadm' command is very helpful.  Example:
+                udevadm info --query=all --name=/dev/sda
+        
+            The above command returns a bunch of information (looks like a Windows registry).  The sysfs device
+            path follows "DEVTYPE=".
+
+            To monitor 'uevent' events coming from devices, use 'udevadm monitor'.  Example:
+                udevadm monitor --kernel
+                # Returns only kernel events
 
 Job Control:
     You can pause a process by pressing "Ctrl+Z" during operation.
