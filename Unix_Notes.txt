@@ -62,13 +62,17 @@ Common Commands:
     chmod                       Change a file's mode bits (read/write/execute)
     clear                       Clear the screen.
     command -V [cmd]            Provide a bit of information about command 'cmd'
+    cp -rp FROM TO              Copy a folder (-r recursive) from path FROM to path TO (-p preserve permissions)
     dmesg                       List the last kernel messages (long output! Pipe to 'less'?)
     dpkg -i filename.deb        Install a '.deb' file (always 'sudo' this one).
+    df [PATH]                   List filesystem, mount point, device and stats of "PATH" (defaults to all)
     echo                        Print to Standard Out (StdOut)
                                 -e: enable escape sequences; -n: suppress trailing newline;
+    eject DEV                   Eject a device DEV to make it safe to remove (removes from /dev)
     file FILENAME               Returns file type information about file FILENAME
     find DIR -name FILENAME -print  Prints the location of FILENAME if found in directory DIR
                                 Note!  To use globs in the FILENAME, enclose them in single-quotes ''
+    findmnt DEVICE              Print the mount point (if any) of DEVICE
     grep PATTERN [file(s)]      Search for and print out all lines in file(s) matching PATTERN
     ifconfig [-a | -s | -v]     Show network InterFace connection information (like Windows ipconfig)
     kill PID                    Terminate a process by its process id (PID).
@@ -92,9 +96,10 @@ Common Commands:
     tar                         Archive (zip) or unarchive (unzip) a file.
                                 -z: zip; -c: create; -a: append
     tr a-z A-Z                  Translate standard input.  Swap all lowercase chars (a-z) in stdin with uppercase (A-Z)
+    umount PATH                 Unmount the device at PATH
     uname                       Print system information
                                 -o: OS; -m: machine; -a: all
-    which filename              Returns pathnames of the files by searching PATH
+    which FILENAME              Returns pathnames of the files associated with FILENAME by searching $PATH
     whoami                      Returns the current username
 
 Display Modes:
@@ -287,6 +292,26 @@ Device I/O:
             To monitor 'uevent' events coming from devices, use 'udevadm monitor'.  Example:
                 udevadm monitor --kernel
                 # Returns only kernel events
+
+    Mounting a Filesystem Device:
+        After attaching a new block device (assuming it's already been formatted), you need to first mount the
+        filesystem at a chosen path before you can interface with the new block device.
+        For example, if I plug in a new USB stick (say 16GB vfat), the new device may show up in /dev as
+        something like "/dev/sdc1" (use fdisk -l and/or udevadm to find the device).
+        Then I can mount it to a particular location like this:
+            sudo mount /dev/sdc1 /media/kpenney/myUSB16GB
+
+        The directory you mount to can be anything you wish.  Common mount points are /mnt, /media/mnt, etc.
+        When you're ready to remove the device, use 'umount' and 'eject':
+            sudo umount /media/kpenney/myUSB16GB
+            sudo eject /dev/sdc1
+
+        To make a permanent association between a device and a mount point, we add a line to our /etc/fstab file:
+            /dev/sdc1                       /media/kpenney/myUSB16GB    vfat    defaults    0   0
+            /dev/disk/by-uuid/8675-3090     /media/kpenney/myUSB16GB    vfat                0   0
+
+        In the second example, we used the device's UUID since different devices might show up at /dev/sdc1.
+        If the device doesn't mount automatically, you can use "mount -a" to mount all unmounted devices.
 
 Job Control:
     You can pause a process by pressing "Ctrl+Z" during operation.
