@@ -321,7 +321,7 @@ Partitions and Filesystems:
     Extended partition: A partition beyond the normal 4 primary partitions.
     Logical partition:  An extended partition is broken up into logical partitions.
 
-    View/Modify Partitions:
+    View Partitions:
         parted      A text-based partitioning tool that supports both MBR and GPT.
         gparted     A graphical version of 'parted'
         fdisk       A text-based partitioning tool that supports only MBR.
@@ -331,7 +331,14 @@ Partitions and Filesystems:
                             Number  Start   End Size    Type    File System Flags   // for MBR (aka 'msdos')
                             Number  Start   End Size    File System Name    Flags   // for GPT
 
-                            Number  
+    Modify Partitions:
+        There's a key difference between the operation of parted/gparted and fdisk/gdisk.
+        While 'fdisk' will only modify the partition table when you perform a "save and exit", allowing you to
+        view and modify your desired configuration before any changes are made, 'parted' makes changes to the
+        partition table immediately as you execute commands.  This makes it very easy to mess up with 'parted'
+        where 'fdisk' is a bit more forgiving.
+
+
 Job Control:
     You can pause a process by pressing "Ctrl+Z" during operation.
     Once paused, a process can be sent to the background with 'bg' or brought to the foreground with 'fg'
