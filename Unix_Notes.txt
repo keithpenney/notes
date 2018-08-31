@@ -56,9 +56,10 @@ Shortcuts/Hotkeys/Key Bindings:
 
 Common Commands:
 
+    blkid                       View all block devices, UUIDs, and filesystem types.
     cat [file]                  Concatenate files or StdIn and print to StdOut or redirect.
                                 Prints contents of 'file' to StdOut.
-    cat > filename              Redirect output from StdIn to 'filename'.  Ctrl+C to terminate.
+    cat > filename              Redirect input from StdIn to 'filename'.  Ctrl+C to terminate.
     chmod                       Change a file's mode bits (read/write/execute)
     clear                       Clear the screen.
     command -V [cmd]            Provide a bit of information about command 'cmd'
@@ -313,6 +314,33 @@ Device I/O:
         In the second example, we used the device's UUID since different devices might show up at /dev/sdc1.
         If the device doesn't mount automatically, you can use "mount -a" to mount all unmounted devices.
 
+        mount options:
+            -o [fs-option]              # Specify a filesystem-specific option
+            -r                          # Mount as read-only
+            -n                          # Do not update runtime mount database /etc/mtab (useful at boot time)
+            -t [fs-type]                # Specify a filesystem type.  Sometimes 'mount' can guess correctly.
+            [The following options must all follow a -o flag]
+            exec/noexec                 # Enabled/disables program executions on the filesystem
+            suid/nosuid                 # Enables or disables setuid programs.
+            ro                          # Mount as read-only (same as -r above)
+            rw                          # Mount as read/write
+            conv=RULE                   # Convert newline characters (e.g. for FAT) based on RULE=binary/text/auto
+            remount                     # Remount a filesystem (see below).
+
+        Remounting:
+            There are times when you'll need to remount a filesystem (e.g. after a change to /etc/fstab).
+                mount -n -o remount /   # Remount the main filesystem at / (root).
+            This assumes the device is listed in /etc/fstab.  If not, you must specify the device.
+
+    Unmounting:
+        Modern operating systems buffer disk operations in a cache to speed up the user interface and minimize
+        costly writes to the disk.  But this means that even after completing all write tasks, a filesystem device
+        has not necessarily received the bytes (e.g. they could still be in the cache).  This is rare, but it's
+        good practice to do the following before disconnecting a filesystem device:
+            umount /dev/mydevice        # Detach the device from its mount point
+            sync                        # Ensure all cached write operations are completed
+            eject /dev/mydevice         # Finally remove /dev/mydevice from the device table
+
 Partitions:
     The first block of memory on a disk is reserved for the partition table.  There are two primary types of
     partition tables: Master Boot Record (MBR) and Globally Unique Identifier Partition Table (GPT)
@@ -378,6 +406,36 @@ Filesystems:
         HFS+ is an Apple filesystem that improves on the older HFS and is used on most Apple/Macintosh devices.
         It supports long filenames, journaling, hard links, etc.
         It is beginning to be replaces by the Apple Filesystem (APFS) as of 2017.
+
+    ISO 9660 (iso9660):
+        This is the standard filesystem for CD-ROM.
+
+    Making a Filesystem:
+        Once you've installed a new disk/drive and properly formatted its partitions, you're ready to create a
+        filesystem on the drive.  The 'mkfs' command (which actually redirects to another program based on the
+        target filesystem) is an easy user-space command for this job.
+            mkfs -t ext4 /dev/sdf2      # Assuming the device is at /dev/sdf2 and you want an ext4 filesystem
+            mkfs.ext4 /dev/sdf2         # This is called by mkfs (equivalent)
+            mke2fs -t ext4 /dev/sdf2    # This is called by mkfs.ext4 (so much abstraction!)
+
+        Any of the above commands can be called to do the same job; they're equivalent.  Any options not specified
+        in the command are controlled by defaults stored in /etc/mke2fs.conf
+
+    Mounting a Filesystem:
+        The last step to adding a disk/drive is to mount your newly created filesystem using 'mount'.
+        See "Mounting a Filesystem Device" above.
+            mount -t ext4 /dev/sdf2 /home/newdrive      # Assuming /home/newdrive is your desired mount point
+            mount UUID=5ac31dba-f30b-801a-e4ca-3ldf0076fdee /home/newdrive  # You can find your UUID with 'blkid'
+
+    The Filesystem Table (/etc/fstab):
+        Linux keeps a permanent list of filesystems and mount options to automatically mount on bootup.
+        The devices, mount points, and mount options are listed in a simple plaintext file '/etc/fstab'.
+        Each line corresponds to one filesystem and has the following structure.
+            dev/UUID    mount-point     fs-type     options     backup-info     fs-test-order
+
+        'options' are a list of long options (see 'mount options' above) separated by commas.
+        'backup-info' should always be zero '0' (used by the 'dump' command).
+        'fs-test-order' should be 1 for the root filesystem, 2 for other filesystems, and 0 for everything else
 
 Job Control:
     You can pause a process by pressing "Ctrl+Z" during operation.
