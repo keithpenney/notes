@@ -75,6 +75,7 @@ Common Commands:
                                 Note!  To use globs in the FILENAME, enclose them in single-quotes ''
     findmnt DEVICE              Print the mount point (if any) of DEVICE
     grep PATTERN [file(s)]      Search for and print out all lines in file(s) matching PATTERN
+                                -i: case insensitive; -n: print line numbers
     ifconfig [-a | -s | -v]     Show network InterFace connection information (like Windows ipconfig)
     kill PID                    Terminate a process by its process id (PID).
                                 -STOP: pause a process; -CONT: continue after a pause.
