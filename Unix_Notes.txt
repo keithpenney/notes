@@ -96,9 +96,9 @@ Common Shell Commands:
     echo                        Print to Standard Out (StdOut)
                                 -e: enable escape sequences; -n: suppress trailing newline;
     eject DEV                   Eject a device DEV to make it safe to remove (removes from /dev)
-    file FILENAME               Returns file type information about file FILENAME
-    find DIR -name FILENAME -print  Prints the location of FILENAME if found in directory DIR
-                                Note!  To use globs in the FILENAME, enclose them in single-quotes ''
+    file FILE                   Returns file type information about file FILE
+    find DIR -name FILE -print  Prints the location of FILE if found in directory DIR
+                                Note!  To use globs in the FILE, enclose them in single-quotes ''
     findmnt DEVICE              Print the mount point (if any) of DEVICE
     free                        View current RAM and swap usage.
     grep PATTERN [file(s)]      Search for and print out all lines in file(s) matching PATTERN
@@ -106,7 +106,7 @@ Common Shell Commands:
     ifconfig [-a | -s | -v]     Show network InterFace connection information (like Windows ipconfig)
     kill PID                    Terminate a process by its process id (PID).
                                 -STOP: pause a process; -CONT: continue after a pause.
-    less FILENAME               Read the contents of a long file FILENAME broken up into pages.
+    less FILE                   Read the contents of a long file FILE broken up into pages.
     ln -s TARGET LINKNAME       Create a symlink named LINKNAME pointing to TARGET
     ls [DIR]                    List the contents of the directory DIR.  Defaults to current directory.
                                 -l: 'long' format (more detail); -i: print inode numbers.
@@ -129,7 +129,8 @@ Common Shell Commands:
     umount PATH                 Unmount the device at PATH
     uname                       Print system information
                                 -o: OS; -m: machine; -a: all
-    which FILENAME              Returns pathnames of the files associated with FILENAME by searching $PATH
+    wc FILE                     Print the number of words, bytes, and newlines in FILE. -l: print newline count
+    which FILE                  Returns pathnames of the files associated with FILE by searching $PATH
     whoami                      Returns the current username
 
 File Permissions:
@@ -373,6 +374,9 @@ Partitions:
                             Number  Start   End Size    Type    File System Flags   // for MBR (aka 'msdos')
                             Number  Start   End Size    File System Name    Flags   // for GPT
 
+        Note: if you see a kernel message like: "sda: sda1 sda2 < sda5 >", it means sda5 is contained within
+        sda2 (sda2 is most likely an extended partition).
+
     Modify Partitions:
         There's a key difference between the operation of parted/gparted and fdisk/gdisk.
         While 'fdisk' will only modify the partition table when you perform a "save and exit", allowing you to
@@ -560,6 +564,83 @@ Job Control:
     in the background.
     Note that it might be helpful to redirect output to a file so that it doesn't bug you from the background.
 
+The Boot Process:
+    A simplified summary of the stages of the Unix boot process:
+    1. The computer's BIOS or boot firmware loads and runs a boot loader.
+    2. The boot loader finds the kernel image on a disk, loads it into memory, and starts it.
+    3. The kernel initializes the devices and their drivers.
+    4. The kernel mounts the root filesystem.
+    5. The kernel starts the "init" program with a process ID of 1.  This point is the "user space start."
+    6. "init" starts the rest of the system processes.
+    7. "init" starts a program that allows the user to log in.
+
+    Startup Messages:
+        During the boot process, the BIOS, Kernel, and system processes will spit out a whole bunch of
+        text (some of which may even be informative).  Since this happens so fast, and a lot of it is
+        hidden from the user, it's best to view these messages after the boot.
+        These messages are often written to the kernel system log file (/var/log/kern.log)
+        Or you could look at the output of 'dmesg' (remember to pipe to 'less' or 'grep').
+
+        Once the user space startup procedure kicks off, messages are not stored in a single log, but each
+        process typically writes its own log somewhere.  Some versions of 'init' can log all startup messages
+        if you don't want to hunt around through a bunch of logs.
+
+    The Bootloader:
+        The computer's BIOS (or UEFI) is the first firmware to wake up and has only simple capabilities
+        hardwired in non-volatile memory.  The first thing it does is load and run a bootloader.
+        The bootloader needs to know how to find the kernel and what parameters it should pass to it.
+
+        To do this, it needs to access the disk.  Without the kernel, disk access must go through the BIOS
+        and is thus quite limited.  BIOS knows how to access nearly any disk hardware via Linear Block
+        Addresing (LBA) which is slow but universal and gets the job done.
+
+        Once the bootloader can actually read bits from the disk, it needs to know how to traverse the
+        filesystem to find the kernel - this capability must be preprogramed into the bootloader.  Thus
+        if a bootloader encounters a filesystem that it doesn't recognize, it cannot boot the kernel from it.
+
+        Kernel Parameters:
+            Kernel parameters are parameters passed by the bootloader to the kernel upon startup.
+            If the Kernel receives a parameter it doesn't understand, it saves it and passes it to 'init'
+            once it's started.
+            You can view these parameters at: /proc/cmdline
+
+            root=...        # This is the location of the root filesystem.  Can be /dev/... or UUID
+            BOOT_IMAGE=...
+            ro              # Mount the root filesystem as read-only upon user-space start (to run fsck)
+            splash          # Hide boring startup output with a classy splash screen
+
+        Bootloader Configuration:
+            If a bootloader were to only have a single set of preprogrammed capabilities, it would not
+            be terribly useful.  Thus, all bootloaders can be configured to some degree.  Some of their
+            capabilities:
+                - Select between multiple kernels
+                - Switch between sets of kernel parameters
+                - Allow manual user override of kernel image names and parameters
+                - Provide support for booting other operating systems
+
+            Modern advances have diminished the need for some of these capabilities (e.g. booting from a
+            USB flash drive instead of into single-user mode), but it is still necessary at times to
+            change bootloader configurations.  This requires getting to the boot prompt, a process which
+            varies substatially between distributions.
+
+            One of the most popular Linux bootloaders is called GRUB.  Some other common bootloaders
+            include: LILO, SYSLINUX, LOADLIN, coreboot (aka LinuxBIOS) for BIOS
+            and:     efilinux, and Linux Kernel EFISTUB for UEFI.
+
+        GRUB (aka the GRand Unified Bootloader):
+            Note!  The following applies to "GRUB 2", rather than the older "GRUB Legacy".
+            To access the GRUB configuration,
+                - Hold down the SHIFT key during the BIOS boot process to bring up the GRUB menu
+                - This will bring up a window with simple boot options.
+                    - Press Esc to disable the automatic timeout
+                - Press 'e' to view/edit the defaul bootloader configuration commands
+
+            GRUB Configuration:
+                The GRUB configuration parameters screen looks confusing for a reason: GRUB has its own
+                kernel and borrows a lot of terminology from the Unix world.  A lot of things on this
+                screen will look familiar but may not be the process/file you're familiar with.
+                Look at the kernel parameters for anything related to the kernel (including the root path).
+                Every reference to 'root' outside of the kernel parameters line is referencing the GRUB root.
 
 Handy Examples:
     # Search /.../words for pattern 'ie' (returns a lot!) - pipe to 'less' to paginate

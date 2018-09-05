@@ -99,6 +99,8 @@ de = same as dw as far as I can tell.
 
 dd = delete the current line
 
+d$ = delete from the cursor position to the end of the current line
+
 n dd = delete n lines starting at the current cursor position
 
 n dw = delete n words to the right of the current cursor position
