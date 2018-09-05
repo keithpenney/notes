@@ -1,8 +1,4 @@
-Unix Shell and Environment Notes
-
-General:
-    Tips for working in the typical Unix environment
-    Primarily via a shell (terminal).
+Unix/Linux Shell and Environment Notes
 
 Getting Help:
     Man Pages:
@@ -36,7 +32,36 @@ Getting Help:
             info CMD
         where 'CMD' is the command in question.
 
-Shortcuts/Hotkeys/Key Bindings:
+User vs. Kernel:
+    Unix/Linux is broken up into various layers of abstraction.
+    User Processes:
+        GUIs, servers, shells, ...
+    Kernel Processes:
+        The Kernel (aka "OS"), system calls, process management, memory management, device drivers, ...
+    Hardware:
+        Processor (CPU), main memory (RAM), disks, network adapters, ...
+
+    Code running in "Kernel Mode" has unlimited access to the processor and RAM.
+    Code running in "User Mode" has limited access system resources and must go through the Kernel for access.
+    Memory is broken up between "Kernel Space" (memory only the Kernel can access) and "User Space" (memory that
+    user processes can access).
+
+Display Modes:
+    Unix/Linux systems have two primary display modes: text mode and graphics mode (X Window System Server)
+    Historically, systems booted directly into text mode, but now most distros hide text mode during boot with
+    a splash screen and switch to full graphics mode at the end of the boot process.
+
+    Virtual Consoles:
+        When a modern Linux system boots, several virtual consoles start and normally just wait for a login.
+        Some of these can also be processing a 'getty' command (see below). 
+        To switch from a GUI to /dev/tty1 (the first virtual console), press CTRL+ALT+F1 then to switch from
+        a virtual console in text mode to any other, press ALT+F* where 'F*' is F1, F2, F3, F4, etc...
+        
+        You can also switch between virtual consoles with 'chvt *' where '*' is 1, 2, 3, 4, etc...
+        Note:
+            On kpenney-z97, the GUI is running in /dev/tty7, tty1-6 are all idling at a login prompt.
+
+Shell Shortcuts/Hotkeys/Key Bindings:
     ctrl + _        Undo the last edit (not the last command)
     ctrl + t        Swap two characters
     alt  + t        Swap two words
@@ -54,7 +79,7 @@ Shortcuts/Hotkeys/Key Bindings:
     ctrl + y        Paste from the buffer
     ctrl + l        Clear screen
 
-Common Commands:
+Common Shell Commands:
 
     blkid                       View all block devices, UUIDs, and filesystem types.
     cat [file]                  Concatenate files or StdIn and print to StdOut or redirect.
@@ -67,6 +92,7 @@ Common Commands:
     dmesg                       List the last kernel messages (long output! Pipe to 'less'?)
     dpkg -i filename.deb        Install a '.deb' file (always 'sudo' this one).
     df [PATH]                   List filesystem, mount point, device and stats of "PATH" (defaults to all)
+    du [-s] *                   List disk usage of every subdirectory of the current directory (-s: summary).
     echo                        Print to Standard Out (StdOut)
                                 -e: enable escape sequences; -n: suppress trailing newline;
     eject DEV                   Eject a device DEV to make it safe to remove (removes from /dev)
@@ -74,6 +100,7 @@ Common Commands:
     find DIR -name FILENAME -print  Prints the location of FILENAME if found in directory DIR
                                 Note!  To use globs in the FILENAME, enclose them in single-quotes ''
     findmnt DEVICE              Print the mount point (if any) of DEVICE
+    free                        View current RAM and swap usage.
     grep PATTERN [file(s)]      Search for and print out all lines in file(s) matching PATTERN
                                 -i: case insensitive; -n: print line numbers
     ifconfig [-a | -s | -v]     Show network InterFace connection information (like Windows ipconfig)
@@ -82,7 +109,7 @@ Common Commands:
     less FILENAME               Read the contents of a long file FILENAME broken up into pages.
     ln -s TARGET LINKNAME       Create a symlink named LINKNAME pointing to TARGET
     ls [DIR]                    List the contents of the directory DIR.  Defaults to current directory.
-                                -l : 'long' format.  More detail.
+                                -l: 'long' format (more detail); -i: print inode numbers.
     mount -t TYPE DEVICE DIR    Mount a DEVICE of type TYPE to the file tree at DIR.
     passwd [USERNAME]           Change the password for user USERNAME.  Defaults to current user.
     ps                          List currently running processes.
@@ -93,6 +120,7 @@ Common Commands:
     set                         Allows you to set the values of shell options and positional parameters.
                                 Calling bash with flag -a is the same as opening bash then calling 'set -a'
     seq [begin] [end]           Return a sequence of numbers from 'begin' to 'end'
+    stat FILE                   Return a bunch of statistics about file FILE (including inode number, link count)
     stream                      Stream pixel data from one image source to a destination (very lightweight).
     sudo                        Do as superuser (requires password)
     tar                         Archive (zip) or unarchive (unzip) a file.
@@ -103,26 +131,6 @@ Common Commands:
                                 -o: OS; -m: machine; -a: all
     which FILENAME              Returns pathnames of the files associated with FILENAME by searching $PATH
     whoami                      Returns the current username
-
-Display Modes:
-    Unix/Linux systems have two primary display modes: text mode and graphics mode (X Window System Server)
-    Historically, systems booted directly into text mode, but now most distros hide text mode during boot with
-    a splash screen and switch to full graphics mode at the end of the boot process.
-
-    Virtual Consoles:
-        When a modern Linux system boots, several virtual consoles start and normally just wait for a login.
-        Some of these can also be processing a 'getty' command (see below). 
-        To switch from a GUI to /dev/tty1 (the first virtual console), press CTRL+ALT+F1 then to switch from
-        a virtual console in text mode to any other, press ALT+F* where 'F*' is F1, F2, F3, F4, etc...
-        
-        You can also switch between virtual consoles with 'chvt *' where '*' is 1, 2, 3, 4, etc...
-        Note:
-            On kpenney-z97, the GUI is running in /dev/tty7, tty1-6 are all idling at a login prompt.
-
-Shebang:
-    Shebang scripts start with #! and are typically the first line of a file.
-    These help a Unix-like OS identify the type of file or program associated with it.
-    The Windows world uses only the file extension to determine the type, whereas Unix can alternatively use Shebangs
 
 File Permissions:
     File permissions can be viewed with a command like "ls -l" and normally show up as something like:
@@ -166,6 +174,11 @@ File Permissions:
             umask 077           # All permissions for the user, none for group/other
             umask 022           # All permissions for the user, read/execute (no write) for group/other
         Note that it only applies to subsequently created files during a single session.
+
+Shebang:
+    Shebang scripts start with #! and are typically the first line of a file.
+    These help a Unix-like OS identify the type of file or program associated with it.
+    The Windows world uses only the file extension to determine the type, whereas Unix can alternatively use Shebangs
 
 Symbolic Links (Symlinks):
     A symbolic link (symlink) is a file that points to another file or directory somewhere else on the disk
@@ -411,6 +424,29 @@ Filesystems:
     ISO 9660 (iso9660):
         This is the standard filesystem for CD-ROM.
 
+    Special-Purpose Filesystems:
+        Unix has implemented several instances of using a filesystem to serve as a type of system interface,
+        rather than representing data stored on a physical device somewhere.  Here are some examples:
+
+        proc:
+            Mounted on /proc
+            Each numbered directory in /proc is the process ID of a current process on the system.
+            The files within each subdirectory represent different aspects of the process.
+
+        sysfs:
+            Mounted on /sys
+            Allows for a more elaborate device interface than the simple /dev location.
+
+        tmpfs:
+            Mounted on /run (and other locations).
+            Allows using physical memory as a temporary file storage location.
+
+    View Currently Mounted Filesystems:
+        The command 'df' will list all currently mounted filesystems, their available space, used space,
+        device name, and mount point.
+        The command 'du' will list the disk usage of every directory in the hierarchy, walking the tree from
+        your current directory.  This output can be verbose.  Try using 'du -s' for a summary instead.
+
     Making a Filesystem:
         Once you've installed a new disk/drive and properly formatted its partitions, you're ready to create a
         filesystem on the drive.  The 'mkfs' command (which actually redirects to another program based on the
@@ -437,6 +473,83 @@ Filesystems:
         'options' are a list of long options (see 'mount options' above) separated by commas.
         'backup-info' should always be zero '0' (used by the 'dump' command).
         'fs-test-order' should be 1 for the root filesystem, 2 for other filesystems, and 0 for everything else
+
+    Checking and Repairing a Filesystem:
+        The kernel trust the filesystem completely (assumes no errors).  Errors in the filesystem can result
+        from unexpected power outages, disk failures, improper device unmounting, etc.
+        Modern filesystems which use journaling are far less prone to filesystem errors, but checks should
+        still be done periodically.  This can be done with command 'fsck' (FileSystem ChecK).
+
+        Warning!  Only run fsck on an unmounted device as the kernel could otherwise alter the disk data while
+        the check is running.  The only exception is with the root partition mounted in read-only single-user mode.
+            fsck /dev/sdb1              # Run fsck on device /dev/sdb1 in interactive manual mode
+
+        In interactive manual mode, fsck will stop on an error and ask you how you would like to proceed.
+        If fsck encounters a "loose inode", it has found a file that appears to have no filename.  These files
+        are collected in the "lost+found" directory for manual renaming by the user.
+
+        fsck flags:
+            -p          # Automatically fix common errors
+            -a          # Same as -p
+            -n          # Check the filesystem without modifying anything
+            -fy         # e2fsck only!  Flush the journal to the filesystem database.  
+                        # The kernel will not mount a filesystem with a non-empty journal.
+
+        Worst-Case Scenario:
+            If the filesystem is really messed up, try one of the following:
+                Use 'dd' to copy the entire filesystem to another partition of the same size.
+                Repair (as much as possible) and mount the filesystem in read-only mode and copy data manually.
+                Use 'debugfs' command (which pretty much just does the above option).
+
+    Swap Space:
+        If you run out of physical memory (RAM), the Linux virtual memory system can make use of the disk by
+        moving pieces of memory to and from a reserved section of the disk called "swap space."
+        Normally only blocks of memory associated with idle programs are "swapped" to the disk.
+        Use the command 'free' to view the current swap usage.
+
+        Using a Disk Partition as Swap Space:
+            To use an entire disk partition as swap space:
+                1. Ensure the partition is empty.
+                2. Run "mkswap DEVICE" (where "DEVICE" is the partition's device path).
+                3. Run "swapon DEVICE" to register the space with the kernel.
+                4. (optional) Add an entry to /etc/fstab to use the partition as swap space on bootup.
+
+        Using a File as Swap Space:
+            If you would rather not repartition a drive to make some swap space, you can use a normal file.
+            To do so, run the following with "SWAPFILE" as the name of the new file to use as swap space and
+            "NUM_MB" the file size in megabytes (MB).
+                dd if=/dev/zero of=SWAPFILE bs=1024k count=NUM_MB   # Recall /dev/zero is a source of zeros
+                mkswap SWAPFILE
+                swapon SWAPFILE
+
+        To remove a file or partition from swap space, use "swapoff DEVICE".
+
+    Structure of a (Traditional Unix) Filesystem:
+        Traditional Unix filesystems are made up of a section of data blocks and a database system that manages
+        the connections between the data blocks.  Note that even if new filesystems don't operate in this manner,
+        the Unix Virtual FileSystem (VFS) ensures that programs that expect this kind of interaction can still
+        function on them without too much modification.
+
+        Inodes:
+            An inode is a set of data that describes a file.
+            Includes filename, type, permissions, and a pointer to the top of the file in the data blocks.
+            Inodes are assigned numbers (inode numbers) and are appended to the "inode table" for lookup.
+        
+        Link Count:
+            Each inode has an associated link count.  This is the number of pointers that reference it.
+            Each time a pointer is created to reference the inode (e.g. a hardlink), the link count is
+            incremented.  Each time one of those pointers is deleted (removed), the link count is decremented.
+            When the link count reaches 0, the Kernel can overwrite the data at that data block.
+            Note: the link count of directories tends to be >1 because each subdirectory has a '..' link
+            to its parent directory.
+
+        Viewing Inode Details:
+            The 'stat' command shows a file's inode number, link count, and various other details.
+            The '-i' flag of command 'ls' shows the inode number for each entry in the directory.
+
+        Block Bitmap:
+            The block bitmap is a series of reserved bytes with each bit representing a block of memory.
+            A '0' at a bit means its corresponding memory block is free for writing, a '1' means it's in use.
 
 Job Control:
     You can pause a process by pressing "Ctrl+Z" during operation.
