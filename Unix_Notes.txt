@@ -641,6 +641,50 @@ The Boot Process:
                 screen will look familiar but may not be the process/file you're familiar with.
                 Look at the kernel parameters for anything related to the kernel (including the root path).
                 Every reference to 'root' outside of the kernel parameters line is referencing the GRUB root.
+                Editing the configuration here will affect only the current boot.
+
+                gfxmode         # Graphics mode
+                insmod          # Insert a module or device driver (like the Linux 'insmod')
+                set root=...    # Set the GRUB root (not the kernel root)
+                search          # Search the grub root for the kernel boot image
+                linux           # Load the Linux kernel image file from the GRUB root
+                initrd          # Load the file for the initial RAM filesystem
+
+                grub.cfg:
+                    GRUB configuration options are stored in /boot/grub/grub.cfg but the file should not
+                    be modified directly; instead it is automatically generated/modified by several commands
+                    including 'grub-mkconfig'.
+                    'grub-mkconfig' builds grub.cfg out of various shell scripts in /etc/grub.d
+                    To add a new custom configuration, you can create a new '.cfg' file (best to use a template)
+                    then add it with: grub-mkconfig -o /boot/grub/grub.cfg
+
+            GRUB Command Line:
+                From the boot menu or configuration editor, press 'c' to open the GRUB command line.
+                Simple commands:
+                    ls              # Lists the installed devices currently known to GRUB
+                                    # Disk drives are labeled hd0, hd1, etc...
+                                    # 'msdos' means an MBR partition (rather than a GPT).
+                    ls -l           # Lots more output.  Includes device UUID and filesystem type.
+                    echo $root      # Return the GRUB root (where it expects to find the Kernel)
+                    ls ($root)/     # List contents of the GRUB root
+                    ls ($root)/boot # List contents of the /boot directory in the GRUB root
+                    set             # List currently defined GRUB variables (like CMD)
+                    boot            # Execute the current boot configuration
+
+        Bootloader Summary:
+            Bootloaders can be configured to boot in two very different ways:
+            MBR Boot:
+                The Master Boot Record (MBR) contains a tiny dedicated area (441 bytes) which the BIOS
+                loads and executes.  Since this is pathetically small, this code just loads the bootloader
+                from a section of memory between the MBR and the first partition on the disk.
+[
+            UEFI Boot:
+                The problem above with MBR boot helped motivate the development of the Unified EFI (UEFI)
+                standard.  UEFI includes fancy features like a built-in shell and the ability to read and
+                navigate partitions and filesystems.  In this case there is always a separate small partition
+                on a disk called "ESP" which contains an 'efi' directory with subdirectories corresponding
+                to each bootloader available on the system.
+                To use UEFI Boot with GRUB, you must install the UEFI version of GRUB (not the BIOS version)!
 
 Handy Examples:
     # Search /.../words for pattern 'ie' (returns a lot!) - pipe to 'less' to paginate
