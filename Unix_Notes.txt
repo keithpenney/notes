@@ -112,6 +112,7 @@ Common Shell Commands:
                                 -l: 'long' format (more detail); -i: print inode numbers.
     mount -t TYPE DEVICE DIR    Mount a DEVICE of type TYPE to the file tree at DIR.
     passwd [USERNAME]           Change the password for user USERNAME.  Defaults to current user.
+    pkg-config                  Return metainformation about installed packages.
     ps                          List currently running processes.
                                 x: only your processes; ax: all processes; u: more info; w: fulll command names
     pwd                         Print the working (current) directory
@@ -123,6 +124,7 @@ Common Shell Commands:
     stat FILE                   Return a bunch of statistics about file FILE (including inode number, link count)
     stream                      Stream pixel data from one image source to a destination (very lightweight).
     sudo                        Do as superuser (requires password)
+    systemctl                   systemd introspection and control
     tar                         Archive (zip) or unarchive (unzip) a file.
                                 -z: zip; -c: create; -a: append
     tr a-z A-Z                  Translate standard input.  Swap all lowercase chars (a-z) in stdin with uppercase (A-Z)
@@ -677,7 +679,7 @@ The Boot Process:
                 The Master Boot Record (MBR) contains a tiny dedicated area (441 bytes) which the BIOS
                 loads and executes.  Since this is pathetically small, this code just loads the bootloader
                 from a section of memory between the MBR and the first partition on the disk.
-[
+
             UEFI Boot:
                 The problem above with MBR boot helped motivate the development of the Unified EFI (UEFI)
                 standard.  UEFI includes fancy features like a built-in shell and the ability to read and
@@ -685,6 +687,79 @@ The Boot Process:
                 on a disk called "ESP" which contains an 'efi' directory with subdirectories corresponding
                 to each bootloader available on the system.
                 To use UEFI Boot with GRUB, you must install the UEFI version of GRUB (not the BIOS version)!
+
+    Common "init" Versions:
+        The "init" program is responsible for loading all the processes that user-space requires at startup
+        in a logical manner so that all dependencies and conflicts are resolved.  It should optimize for
+        speed and minimal resource usage.
+
+        In the past, "init" was not much more than a fancy shell script with a pre-defined order that
+        processes are to be called, but it has evolved into much more elaborate schemes to meet the demands
+        of modern systems.
+
+        System V init:
+            System V introduced the concept of a "runlevel" which, though not of consequence in modern machines,
+            has stuck around as a sort of artifact that you see every once-in-a-while.  The runlevel is a number
+            between 0 and 6.  The system spends most of its time in one runlevel (corresponding to user-space),
+            but switches levels to cleanly startup or shutdown processes or the system itself.
+        Upstart:
+            Upstart is an event-driven "init" incarnation in use in Ubuntu systems before version 15.04
+        systemd:
+            systemd is a relatively modern version of init.  Under systemd, each process is represented by
+            a "unit file" which describes the process and specifies what it requires to operate and what it
+            may conflictvwith.  The desired configuration is described as a "goal" to be acheived. It is then
+            the responsibility of "init" to decide how to achieve the "goal".
+
+            Configuration:
+                systemd configuration files are spread all over the place.  Two typical directories are:
+                [/usr]/lib/systemd/system           # System UNIT directory
+                /etc/systemd/system                 # System CONFIGURATION directory
+
+                To check the current systemd configuration search path, use the 'systemctl' command:
+                    systemctl -p UnitPath show
+
+                You can also use 'pkg-config' to show the system unit/configuration directories:
+                    pkg-config systemd --variable=[systemdsystemunitdir, systemdsystemconfdir]  # one or the other
+
+            Unit Files:
+                The syntax of unit files comes from the XDG Desktop Entry Specification (commonly used with ".desktop"
+                files).  The unit files fall into three categories.
+
+                Service units:  controls the traditional Unix service daemons.
+                                ".service" extension with a "[Service]" section
+                Mount units:    controls the attachment of filesystems.
+                                ".mount" extension with a "[Mount]" section
+                Target units:   controls other units, usually as groups.
+                                ".target" extension with a "[Target]" section
+
+                Dependencies:
+                    Requires            Strict dependencies; the unit is deactivated if a "requires" fails.
+                    RequiresOverridable Behaves like "Requires" when run normally and "Wants" when started manually.
+                    Wants               Activation only; if a "wants" fails after activation, unit not affected.
+                    Requisite           Already active; if a "requisite" is not active, unit activation fails.
+                    Conflicts           systemd deactivates "conflicts" if they are active when the unit is activated.
+                    Before=...          systemd activates the unit before the argument of "before"
+                    After=...           systemd activates the unit after the argument of "after"
+
+                    Conditional Dependencies:
+                        ConditionPathExists=p           True if the file path 'p' exists
+                        ConditionPathIsDirectory=p      True if 'p' is a directory
+                        ConditionFileNotEmpy=p          True if 'p' is a file of nonzero length
+
+                    To view dependencies of a particular unit, use the 'systemctl' command:
+                        systemctl show -p type unit
+
+System Logging:
+    Most system processes spit all their chatter to the 'syslog' service for system logging.  The traditional
+    logging service is some version of the 'syslogd' daemon.  The system logger waits for messages and routes them
+    all over the place, based on configuration settings.  Most of the messages end up in some sort of log file.
+
+    rsyslogd:
+        Most moder distributions use 'rsyslogd' which is a suped-up version of 'syslogd'.
+        Configuration:
+            /etc/rsyslog.conf
+            /etc/rsyslog.d
+        
 
 Handy Examples:
     # Search /.../words for pattern 'ie' (returns a lot!) - pipe to 'less' to paginate
