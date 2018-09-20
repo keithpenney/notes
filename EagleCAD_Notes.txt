@@ -14,6 +14,7 @@ Libraries:
     semicon-smd-ipc.lbr     Nice generic symbols for diodes, transistors, etc.
     pinhead.lbr             Pin headers!
     smd-ipc.lbr             IPC standard SMD packages
+    con-subd.lbr            D-Sub connectors
 
 Eagle interprets certain characters in names as special syntax:
     >property               Declare a property called 'property'.  Used in labels e.g. ">name", ">value"
@@ -30,7 +31,18 @@ Sheets:
 Board Layout:
     SET PAD_NAMES OFF | ON; // Sets pad names off/on in board layout.
 
+Copper Pours:
+    Make a closed polygon on one of your copper layers.
+    Use the "name" tool to change the net name to your intended net (usually power or gnd).
+    View the polygon's properties to set the rules for isolation, orphans, etc.
+    Select Tools->Ratsnest to fill.
 
 Eagle User Language Script:
     Eagle has a built-in user language that looks a lot like C++ for scripting and automating jobs.
     See the help menu if you're curious.
+
+Import Images:
+    Images can be imported via ULP scripts.
+    For fills, use "import-bmp.ulp"
+    For line drawings, use "import-dxf.ulp"
+    Regardless, scaling will likely be necessary.  Make sure to save before executing!
