@@ -135,6 +135,28 @@ Common Shell Commands:
     which FILE                  Returns pathnames of the files associated with FILE by searching $PATH
     whoami                      Returns the current username
 
+Common Directory Structure:
+    /
+        /bin                    Compiled binaries and shell scripts, including basic Unix commands
+        /boot                   Kernel boot loader files
+        /dev                    Device files (see "Device I/O" below)
+        /etc                    System configuration files, setup files, hardware drivers
+        /home                   Personal directories for users
+            /home/kpenney       My '~' directory.
+        /lib                    Library files (shared) for executables
+        /media                  Attachment point for removable media
+        /opt                    A good place for 3rd party software
+        /proc                   Provides a directory-like interface for processes
+        /sys                    Device and system interface (see "Device I/O" below)
+        /sbin                   System executables; related to system management; not generally for users
+        /tmp                    Temporary workspace; many programs/users can use.
+        /usr                    Poorly-named; basically like '/' and has similar subdirectories
+            /usr/include        C header files
+            /usr/local          A good place for admins to install custom software
+            /usr/man            Man pages (alt. in /usr/share/man)
+        /var                    System variables; runtime information; logging, caches
+
+
 File Permissions:
     File permissions can be viewed with a command like "ls -l" and normally show up as something like:
     -rw-r--r--      # A normal file with user read/write, group read, and other read permissions
