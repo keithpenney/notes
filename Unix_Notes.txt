@@ -108,6 +108,7 @@ Common Shell Commands:
                                 -STOP: pause a process; -CONT: continue after a pause.
     less FILE                   Read the contents of a long file FILE broken up into pages.
     ln -s TARGET LINKNAME       Create a symlink named LINKNAME pointing to TARGET
+    logger [options] [message]  Send a log message. -p [facility.priority]: use specified facility.priority
     ls [DIR]                    List the contents of the directory DIR.  Defaults to current directory.
                                 -l: 'long' format (more detail); -i: print inode numbers.
     mount -t TYPE DEVICE DIR    Mount a DEVICE of type TYPE to the file tree at DIR.
@@ -771,6 +772,27 @@ The Boot Process:
                     To view dependencies of a particular unit, use the 'systemctl' command:
                         systemctl show -p type unit
 
+Shutting Down:
+    'init' also controls how your system shuts down.
+    To properly shutdown a Linux system, use the 'shutdown' command.  Examples:
+        shutdown -h now                 # Shutdown and halt (power off) now
+        shutdown -r +10                 # Shutdown and reboot in 10 minutes
+    'shutdown' tells 'init' to begin the shutdown process.
+    Depending on your version of 'init':
+        systemd activates the shutdown units
+        Upstart emits a shutdown event
+        System V changes runlevel to 0 or 6.
+
+    Shutdown steps:
+        'init' asks every process to shut down cleanly
+        If a process doesn't respond after a time, init tries to kill it with a TERM signal
+        If the TERM signal doesn't work, init uses the KILL signal.
+        System files are locked into place (no more read/write/open)
+        System unmounts all filesystems other than the root fs.
+        System remounts the root fs as read-only.
+        System writes all buffered data out to the fs with the 'sync' program.
+        Someone (either 'init' or someone else) sends the 'reboot' system call.
+
 System Logging:
     Most system processes spit all their chatter to the 'syslog' service for system logging.  The traditional
     logging service is some version of the 'syslogd' daemon.  The system logger waits for messages and routes them
@@ -781,7 +803,33 @@ System Logging:
         Configuration:
             /etc/rsyslog.conf
             /etc/rsyslog.d
+        syslogd configuration files are made up of 'rules' and some program-specific extentions (e.g. 'rsyslogd')
+        A traditional 'rule' has a 'selector' and an 'action' to show how to deal with particular log types.
+        The selector is a pattern that matches the 'facility' and 'priority' (facility.priority) of log messages.
+        The 'facility' is a general category of message (see man 5 rsyslog.conf).
+        The 'priority' is one of (lowest to highest): 
+            debug, info, notice, warning, err, crit, alert, emerg
+        The specified priority is the lowest caught; will also catch all higher priorities.
         
+        Example:
+            #selector               #action                 #note
+            kern.*                  /dev/console            #Send 'kern' facility msgs to the 'console' device file
+            *.info;authpriv.none    /var/log/messages       #A priority of 'none' excludes messages from the facility
+            authpriv.*              /var/log/secure,root    #'root' means send the msg to the superuser if logged in
+            *.emerg                 *                       #An action of '*' means send to all logged-in users
+        
+        Directives:
+            Anything beginning with a '$' is a directive, an extension to the original 'syslogd' syntax.
+            There are many directives.  Here are some examples:
+
+            $IncludeConfig /etc/rsyslog.d/*.conf            # Include all .conf files in /etc/rsyslog.d as config files
+
+    Testing the Logger:
+        The 'logger' command sends a log message manually.  This is a good way to test your logging configuration.
+        E.g.:
+            logger -p daemon.info Hi Keith, how\'s it going?
+            # Send "Hi Keith, how's it going" with facility.prioirty = daemon.info
+
 
 Handy Examples:
     # Search /.../words for pattern 'ie' (returns a lot!) - pipe to 'less' to paginate
