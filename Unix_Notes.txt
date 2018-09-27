@@ -89,9 +89,10 @@ Common Shell Commands:
     clear                       Clear the screen.
     command -V [cmd]            Provide a bit of information about command 'cmd'
     cp -rp FROM TO              Copy a folder (-r recursive) from path FROM to path TO (-p preserve permissions)
+    date [OPTIONS]              Return the current date/time. +%s: seconds since 1/1/1970
+    df [PATH]                   List filesystem, mount point, device and stats of "PATH" (defaults to all)
     dmesg                       List the last kernel messages (long output! Pipe to 'less'?)
     dpkg -i filename.deb        Install a '.deb' file (always 'sudo' this one).
-    df [PATH]                   List filesystem, mount point, device and stats of "PATH" (defaults to all)
     du [-s] *                   List disk usage of every subdirectory of the current directory (-s: summary).
     echo                        Print to Standard Out (StdOut)
                                 -e: enable escape sequences; -n: suppress trailing newline;
@@ -122,6 +123,7 @@ Common Shell Commands:
     set                         Allows you to set the values of shell options and positional parameters.
                                 Calling bash with flag -a is the same as opening bash then calling 'set -a'
     seq [begin] [end]           Return a sequence of numbers from 'begin' to 'end'
+    shutdown [OPTIONS] [TIME]   Cleanly shut down. -h: HALT (shutdown); -r: REBOOT; TIME = [now, hh:mm, +min]
     stat FILE                   Return a bunch of statistics about file FILE (including inode number, link count)
     stream                      Stream pixel data from one image source to a destination (very lightweight).
     sudo                        Do as superuser (requires password)
@@ -830,6 +832,118 @@ System Logging:
             logger -p daemon.info Hi Keith, how\'s it going?
             # Send "Hi Keith, how's it going" with facility.prioirty = daemon.info
 
+User Management:
+    To the kernel, users are just numbers (user IDs).  In user space, a username is associated with a user ID.
+    The mapping of a username to a user ID is done in /etc/passwd
+    When an account is created on a Linux OS, it creates an entry in /etc/passwd and a home directory.
+    
+    /etc/passwd
+        This file contains more than just mapping from username to user ID.  Fields are separated by colons :
+        See "man 5 passwd"
+        username : encrypted password : user ID : group ID : real name : home : shell
+        
+        The encrypted password is often stored in the "shadow file" (/etc/shadow) instead of /etc/passwd.  If this
+        is the case, there is typically an 'x' in the "encrypted password" field.  An asterisk '*' in this field
+        means the user cannot log in.
+        The user ID should be unique.  This is how the kernel identifies a user.
+        The group ID is one of the numbered entries in the /etc/group file.  Primarily for file permissions.
+        The 'real name' field can contain multiple entries separated by commas.  Often called the GECOS field.h
+        The 'home' field specifies this user's home directory.
+        The 'shell' field specifies this user's preferred shell program.
+
+        Special Users:
+            Special users listed in /etc/passwd include:
+            superuser: always has UID 0 and GID 0. Full privileges.
+            daemon: no login privileges
+            nobody: no write privileges; often programs run as this user for security reasons.
+
+        Manipulating /etc/passwd
+            Don't edit this file directly.  Instead, use the built-in utilities:
+            passwd                              Change the user's username
+            adduser [options] USER GROUP        Add a new user USER under group (possibly new) GROUP
+            useradd                             A lower-level utility for when 'adduser' is not available.
+            deluser [options] USER GROUP        Delete a user and/or group.
+            userdel                             A lower-level utility for when 'deluser' is not available.
+            addgroup
+            delgroup
+
+            If you really need to edit this file, use 'vipw' which will make a locked backup copy during editing.
+
+    /etc/shadow
+        This file replicates many of the features of /etc/passwd but in a more secure format.
+        There is a suite of libraries and utilities (mostly owned by PAM) to manipulate this file.
+
+    /etc/group
+        Groups are less important now that fewer machines are used by several people.
+        Groups are almost entirely used for controlling file access permissions.
+        Entries in /etc/group are also fields separated by colons ':'
+        group name : group password : group ID : userlist
+        
+        group name: A human-readable group name
+        group password: don't use this.  Just put an asterisk '*' here.
+        group ID: The number the kernel associates with the group name.
+        userlist: a comma-separated list of users belonging to this group (optional).
+
+    getty and login:
+        'getty' is a program that attaches to a terminal and displays a login prompt.
+        After a username is entered, 'getty' replaces itself with 'login' which prompts for a password.
+        If the password is entered correctly, 'login' replaces itself with your preferred shell.
+        This is less commonly used now; just fyi.
+
+Time and Scheduling:
+    The kernel maintains the 'system clock' which is the clock that timestamps processes and logs.
+    The motherboard has a battery-backup hardware RTC which is fairly accurate.  The system clock is set to
+    the value of the hardware clock at bootup, but is typically updated by a network service daemon.
+        hwclock --systohc --utc         # Update the hardware clock based on the system clock in UTC
+
+    Network Time Protocol (NTP):
+        An NTP daemon periodically updates the system clock based on that of a nearby network server.
+        This service is provided by http://www.ntp.org/
+        Utilities like 'ntpdate' and 'nptd' provide an interface to this service.
+
+    Scheduling Tasks with cron:
+        The utility 'cron' is used for scheduling tasks.  It is the most commonly used Unix daemon for scheduled
+        tasks like system maintenance and log file rotation.
+        'cron' works by executing a 'cron job' specified in the 'crontab' file at the scheduled time.
+        If the process generates standard output or an error an exits abnormally, I guess you get an email?
+        Redirect this output to /dev/null to ignore it.
+
+        cron jobs:
+            To add a 'cron job' to the 'crontab' file, it's best to use the 'crontab' command.
+
+            Structure of a cron job:
+                The fields of a cron job entry are space-separated.  To denote all possible values (e.g. all days
+                of a month), enter an asterisk '*' in the field.
+                Each entry can also be a comma-separated list.
+
+                (minute: 0-59) (hour: 0-23) (day of month: 1-31) (month: 1-12) (day of week: 0-7) (command)
+
+                day of week:    both '0' and '7' represent Sunday
+                command:        the command to be executed.
+
+        crontab Files:
+            Each user can have its own crontab file.
+            The simplest way to install a new crontab file is to put your crontab entries into a file and use
+            'crontab FILE' (where FILE is that filename) to install it as your current crontab file.
+            The 'crontab' command checks the syntax of the file.
+                crontab FILE    Add FILE as the current crontab file.
+                crontab -e      Edit your current crontab file with the editor specified by VISUAL/EDITOR envars
+                crontab -l      List all cron jobs in crontab file.
+                crontab -r      Remove the current crontab file.
+
+            System crontab Files:
+                For system tasks, there is a file (or directory) /etc/crontab (/etc/cron.d) with a slightly
+                different syntax which includes the user before the process.
+                Don't use crontab to edit these files.
+
+    Scheduling a Single Task with 'at':
+        Note: 'at' is not installed by default on Ubuntu
+        To schedule a single, non-recurring task sometime in the future, you can use the command 'at'
+            at TIME             # Start defining a command to execute at time TIME = [HH:MM] or [HH:MM DD.MM.YY]
+                                # After hitting Enter, you will see 'at>' prompting for the command to execute.
+                                # End entry with Ctrl+D
+            atq                 # Check for pending scheduled commands
+            atrm                # Remove a scheduled command
 
 Handy Examples:
     # Search /.../words for pattern 'ie' (returns a lot!) - pipe to 'less' to paginate
