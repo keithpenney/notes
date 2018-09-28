@@ -81,6 +81,7 @@ Shell Shortcuts/Hotkeys/Key Bindings:
 
 Common Shell Commands:
 
+    bg [PID]                    Continue a stopped process (optional process id PID) in the background.
     blkid                       View all block devices, UUIDs, and filesystem types.
     cat [file]                  Concatenate files or StdIn and print to StdOut or redirect.
                                 Prints contents of 'file' to StdOut.
@@ -101,6 +102,7 @@ Common Shell Commands:
     find DIR -name FILE -print  Prints the location of FILE if found in directory DIR
                                 Note!  To use globs in the FILE, enclose them in single-quotes ''
     findmnt DEVICE              Print the mount point (if any) of DEVICE
+    fg [PID]                    Continue a stopped process (optionally specify process id PID) in the foreground.
     free                        View current RAM and swap usage.
     grep PATTERN [file(s)]      Search for and print out all lines in file(s) matching PATTERN
                                 -i: case insensitive; -n: print line numbers; -d skip: skip directories
@@ -195,6 +197,11 @@ File Permissions:
             r-x = 5
             rw- = 6
 
+        Options:
+            -R                  --recursive
+            -c                  --changes (report only when a change is made)
+            --reference=RFILE   (use RFILE's mode as the mode values)
+
     umask:
         You can also specify a common file permission set to assign to all new files created during a session.
         'umask' takes the NEGATION of the 3-digit octal argument discussed in 'chmod' above (it's a MASK!).
@@ -230,13 +237,20 @@ Archiving and Compression:
         'tar' is used with a variety of flags to control its behavior.  The single-character flags can be concatenated
         and do not need to be preceded with a '-'.  This is why 'tar' is often followed by an opaque jumble of
         characters preceding the filename.
+
+        Main Operation Mode:
         -c      Create a new archive
         -A      Append tar files to an existing archive
         -r      Append files to the end of an existing archive
         -t      List the contents of an archive
         -u      Only append files newer than copy in archive
         -x      Extract files from an existing archive
+
+        Operation Modifiers:
         -z      Gzip compress after archiving
+        -J      Use 'xz' compression.
+        -a      Use archive suffix to determine the compression
+        -p      Preserve archive's file permissions (--preserve-permissions, --same-permissions)
 
         Some flags require an argument; these must be at the end of the string of flags or should be used on their own
         or in their long form (see man(1) tar).
@@ -590,6 +604,8 @@ Job Control:
     This will print the process id and then immediately return you to the prompt, running 'gunzip myFile.gz'
     in the background.
     Note that it might be helpful to redirect output to a file so that it doesn't bug you from the background.
+    Also note that if the program waits for user input (like paging with 'less'), it will wait indefinitely in
+    the background.
 
 The Boot Process:
     A simplified summary of the stages of the Unix boot process:
