@@ -122,6 +122,7 @@ Common Shell Commands:
     pwd                         Print the working (current) directory
     read [var]                  Get user input in string form. Stores in 'var' if provided, else in $REPLY
                                 -a: read as space-delimited array; 
+    rmmod MODULE                Remove a module from the Linux kernel.
     set                         Allows you to set the values of shell options and positional parameters.
                                 Calling bash with flag -a is the same as opening bash then calling 'set -a'
     seq [begin] [end]           Return a sequence of numbers from 'begin' to 'end'
