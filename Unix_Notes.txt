@@ -161,6 +161,7 @@ Common Directory Structure:
             /usr/local          A good place for admins to install custom software
             /usr/man            Man pages (alt. in /usr/share/man)
         /var                    System variables; runtime information; logging, caches
+            /var/crash          Ubuntu puts crash reports here.  Delete them if they won't shut up.
 
 
 File Permissions:
