@@ -399,6 +399,19 @@ Device I/O:
             sync                        # Ensure all cached write operations are completed
             eject /dev/mydevice         # Finally remove /dev/mydevice from the device table
 
+    Example:
+        Seagate USB 3.0 1TB Expansion Drive on kpenney-z97:
+        $ udevadm info ...
+            /dev/disk/by-id/usb-Seagate_Expansion_NA82B35X-0:0-part1
+            /dev/disk/by-path/pci-0000:00:14.0-usb-0:3.1:1.0-scsi-0:0:0:0-part1
+            /dev/disk/by-label/Seagate\x20Expansion\x20Drive
+            /dev/disk/by-uuid/643EE23A3EE204C0
+            /dev/sdb1
+
+        $ findmnt /dev/sdb1
+            TARGET                                  SOURCE      FSTYPE  OPTIONS
+            /media/kpenney/Seagate Expansion Drive  /dev/sdb1   fuseblk rw,nosuid,nodev,relatime,user_id=0...
+
 Partitions:
     The first block of memory on a disk is reserved for the partition table.  There are two primary types of
     partition tables: Master Boot Record (MBR) and Globally Unique Identifier Partition Table (GPT)
