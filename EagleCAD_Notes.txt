@@ -3,6 +3,9 @@ Eagle CAD Hacks
 Editing:
     Rotate Item             Right mouse click
     Change layer            Center mouse click
+    
+    Note!  If a gate on a part is set to "request", you need to use the "invoke" command to make it show up explicitly
+    on the schematic.  In Eagle 8.2.2, the "Invoke" button is next to "Slice" and under "Split"
 
 Libraries:
     After creating a custom library, you need to enable it before using it.  This is done most simply by opening the
