@@ -113,7 +113,7 @@ Common Shell Commands:
     ln -s TARGET LINKNAME       Create a symlink named LINKNAME pointing to TARGET
     logger [options] [message]  Send a log message. -p [facility.priority]: use specified facility.priority
     ls [DIR]                    List the contents of the directory DIR.  Defaults to current directory.
-                                -l: 'long' format (more detail); -i: print inode numbers.
+                                -l: 'long' format (more detail); -i: print inode numbers; -t: sort by modified time
     mount -t TYPE DEVICE DIR    Mount a DEVICE of type TYPE to the file tree at DIR.
     passwd [USERNAME]           Change the password for user USERNAME.  Defaults to current user.
     pkg-config                  Return metainformation about installed packages.
@@ -430,6 +430,9 @@ Partitions:
                             Number  Start   End Size    Type    File System Flags   // for MBR (aka 'msdos')
                             Number  Start   End Size    File System Name    Flags   // for GPT
 
+        fdisk -l            List disks and partitions and exit (rather than entering interactive mode).
+                            Device  Boot    Start   End Sectors Size    Id  Type
+
         Note: if you see a kernel message like: "sda: sda1 sda2 < sda5 >", it means sda5 is contained within
         sda2 (sda2 is most likely an extended partition).
 
@@ -535,7 +538,7 @@ Filesystems:
         'fs-test-order' should be 1 for the root filesystem, 2 for other filesystems, and 0 for everything else
 
     Checking and Repairing a Filesystem:
-        The kernel trust the filesystem completely (assumes no errors).  Errors in the filesystem can result
+        The kernel trusts the filesystem completely (assumes no errors).  Errors in the filesystem can result
         from unexpected power outages, disk failures, improper device unmounting, etc.
         Modern filesystems which use journaling are far less prone to filesystem errors, but checks should
         still be done periodically.  This can be done with command 'fsck' (FileSystem ChecK).
