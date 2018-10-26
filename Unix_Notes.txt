@@ -114,6 +114,7 @@ Common Shell Commands:
     logger [options] [message]  Send a log message. -p [facility.priority]: use specified facility.priority
     ls [DIR]                    List the contents of the directory DIR.  Defaults to current directory.
                                 -l: 'long' format (more detail); -i: print inode numbers; -t: sort by modified time
+    md5sum FILE                 Compute and return the md5 128-bit checksum of file FILE.
     mount -t TYPE DEVICE DIR    Mount a DEVICE of type TYPE to the file tree at DIR.
     passwd [USERNAME]           Change the password for user USERNAME.  Defaults to current user.
     pkg-config                  Return metainformation about installed packages.
