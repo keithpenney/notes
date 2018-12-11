@@ -1,0 +1,10 @@
+LTSpice Simulation Directives:
+
+Transient Analysis:
+    Plot a parameter (e.g. voltage) against time
+
+AC Analysis:
+    Determine the frequency response of your design.
+
+DC Sweep:
+    Vary the voltage or current of a particular device.
