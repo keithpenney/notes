@@ -1,5 +1,7 @@
 LTSpice Simulation Directives:
 
+following: https://learn.sparkfun.com/tutorials/getting-started-with-ltspice/all
+
 Transient Analysis:
     Plot a parameter (e.g. voltage) against time
 
