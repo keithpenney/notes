@@ -1,3 +1,27 @@
+SI Prefixes:
+    The following prefixes are acceptable when entering units in text boxes within LTSpice:
+    Prefix  Value
+    ------  -----
+    T       1e12
+    G       1e9
+    MEG     1e6
+    K       1e3
+    m       1e-3
+    u       1e-6
+    n       1e-9
+    p       1e-12
+    f       1e-15
+
+Hotkeys:
+    Ctrl+R
+        Rotate a symbol
+    Ctrl+E
+        Reflect a symbol
+    Ctrl + left mouse click
+        When clicking a trace label in the plot view ('.asc' window), shows average of trace.
+    Alt + left mouse click
+        When clicking a component or net, shows average power dissipation rather than voltage/current.
+
 LTSpice Simulation Directives:
 
 following: https://learn.sparkfun.com/tutorials/getting-started-with-ltspice/all
@@ -10,3 +34,11 @@ AC Analysis:
 
 DC Sweep:
     Vary the voltage or current of a particular device.
+
+Parameter Step:
+    The '.step' directive repeats another simulation directive with the parameter taking a new value every
+    time through the simulation. Examples follow.
+    Step a parameter (in this case the resistance of 'R1') from 10 to 100 by steps of 10
+        .step param R1 10 100 10
+    Step a parameter (in this case the resistance of 'R4') across the values of list 10, 100, 1k, 10k, 100k
+        .step param R4 list 10 100 1k 10k 100k
