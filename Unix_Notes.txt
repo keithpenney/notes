@@ -127,6 +127,8 @@ Common Shell Commands:
     set                         Allows you to set the values of shell options and positional parameters.
                                 Calling bash with flag -a is the same as opening bash then calling 'set -a'
     seq [begin] [end]           Return a sequence of numbers from 'begin' to 'end'
+    shasum [OPTIONS] [FILE]     Compute and return the SHA checksum value of FILE (or stdin if FILE is -)
+                                -a [ALG]: use algorithm ALG (e.g. 256); -b: binary mode; -t: text mode (default)
     shutdown [OPTIONS] [TIME]   Cleanly shut down. -h: HALT (shutdown); -r: REBOOT; TIME = [now, hh:mm, +min]
     stat FILE                   Return a bunch of statistics about file FILE (including inode number, link count)
     stream                      Stream pixel data from one image source to a destination (very lightweight).
