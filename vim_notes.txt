@@ -13,6 +13,10 @@ Description:
 vimtutor	An interactive vim session to learn to use vim
 :help {CMD}	At any point, you can use the ":help" command to learn about any command 'CMD'
 
+Note:
+    A "WORD" is defined as any sequence of non-blank characters separated by whitespace
+    A 'word' is only alphanumeric characters, not including punctuation
+
 =======================================
 -------------- NAVIGATE ---------------
 =======================================
@@ -24,6 +28,12 @@ hjkl = <v^> (same as arrow keys)
 $ = move cursor to the end of a line
 
 w = move cursor forward 1 word
+
+W = move cursor forward 1 WORD
+
+b = move cursor backward 1 word
+
+B = move cursor backword 1 WORD
 
 nw = (where n is an integer) move cursor forward n words
 

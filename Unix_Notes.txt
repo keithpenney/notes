@@ -124,6 +124,7 @@ Common Shell Commands:
     read [var]                  Get user input in string form. Stores in 'var' if provided, else in $REPLY
                                 -a: read as space-delimited array; 
     rmmod MODULE                Remove a module from the Linux kernel.
+    route [FLAGS]               Display local routing table. -n: show raw IP addresses; -C: show routing cache
     set                         Allows you to set the values of shell options and positional parameters.
                                 Calling bash with flag -a is the same as opening bash then calling 'set -a'
     seq [begin] [end]           Return a sequence of numbers from 'begin' to 'end'
@@ -981,6 +982,36 @@ Time and Scheduling:
                                 # End entry with Ctrl+D
             atq                 # Check for pending scheduled commands
             atrm                # Remove a scheduled command
+
+Networking on Unix:
+    For general networking notes, see TCP/IP notes.
+    When a routine wants to send a packet to a destination on the network it first consults the routing
+    table and routing cache to determine which (if any) network adapter is needed for the destination.
+    This information is stored locally in the routing table (and the routing cache).  Most users will find
+    these tables to be pretty sparse, but they will list any destinations on your local network as well
+    as proxy servers and your local router(s).
+
+    The 'route' command allows viewing/modifying the routing table and the routing cache.
+        route                   # display the route table
+        route -n                # display the route table in raw IP addresses (no name resolution)
+        route -Cn               # display the route cache w/o name resolution
+
+    The output of any of the above uses of the 'route' command will list these columns:
+        Destination Gateway Genmask Flags   Metric  Ref Use Iface
+
+    When the internet protocol (IP) receives a target IP address, it compares it to each entry in these
+    tables by bitwise AND'ing the 'Genmask' and the 'Destination'.  If it is a match, the packet is
+    directed towards the 'Gateway'. The 'Iface' is the physical (or virtual) network adapter (interface)
+    used for that gateway.  See 'man route' for the other columns.
+
+    Recall that the default gateway (0.0.0.0) is used whenever no matches are found in the routing table.
+
+    Since the physical hardware transporting network traffic doesn't understand IP addressing, software
+    must translate between IP addresses and, e.g., ethernet addresses (MAC addresses). The software that
+    performs this translation is called Address Resolution Protocol (ARP).
+
+    The 'arp' command returns the ARP table, which is a list of IP addresses directly accessible to the
+    machine (physically connected, no intervening gateway/router) and their associated hardware addresses.
 
 Handy Examples:
     # Search /.../words for pattern 'ie' (returns a lot!) - pipe to 'less' to paginate
