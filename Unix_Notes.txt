@@ -1016,4 +1016,5 @@ Networking on Unix:
 Handy Examples:
     # Search /.../words for pattern 'ie' (returns a lot!) - pipe to 'less' to paginate
     grep ie /usr/share/dict/words | less
-
+    # Find recent messages regarding terminal devices (i.e. USB-to-Serial adapters)
+    dmesg | grep tty
