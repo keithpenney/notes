@@ -5,3 +5,17 @@ Nautilus (File Explorer):
     To see/edit the current path in text form type "Ctrl+L"
 
 
+.desktop Files:
+    Add some links to your 'start menu' by adding '.desktop' files to /usr/share/applications
+
+    [.desktop file example]
+    [Desktop Entry]
+    Version=1.0
+    Name=app_name
+    Comment=This is some app I use
+    Exec=/path/to/working/directory
+    Path=/path/to/executable
+    Icon=/path/to/icon
+    Terminal=false
+    Type=Application
+    Categories=Utility;Development;
