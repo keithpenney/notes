@@ -1,0 +1,105 @@
+= = = = Erlang Notes = = = =
+
+http://erlang.org/doc/getting_started/seq_prog.html
+
+General:
+--------
+    Developed at Ericsson in 1986 - open-sourced in 1998.
+    Open Telecom Platform (OTP) - maintainers of Erlang (at Ericsson).
+        The name OTP now stands for a collection of components/libaries written in/for Erlang.
+    All expressions terminated by a full stop (period) "."  A single expression can occupy more
+    than one line (e.g. function definitions) in which case each line is terminated by a ";".
+    Type case rules strictly enforced.
+        If an identifier is capitalized, it is assumed to be a variable.
+        If an identifier is not capitalized, it is assumed to be an atom.
+    Mostly whitespace insensitive.
+    Variables can only be assigned once in their scope.
+
+The Erlang Shell:
+-----------------
+    The Erlang shell provides a dynamic interpreted interface to the Erlang environment.
+    Lines terminated by a full stop "." (period) and carriage return (\CR).
+    Exit with a Ctrl+C or by executing the halt() command.
+
+    Compile (and import) a module with c(moduleName).
+    Call a function from an imported/compiled module with moduleName:functionName(args).
+
+    Functions:
+    ----------
+        file:set_cwd(myDir).    -- within a file at runtime
+        cd(myDir).              -- from within the shell
+
+The Preprocessor:
+-----------------
+    Erlang has a preprocessor.  And like the rest of the language, the syntax is wacky.
+
+    -define(identifier, definition).
+
+Operators:
+----------
+    + - * /         Basic arithmetic.
+    |               List divider.  See "Data Types->Lists" below.
+    =>              New key-value assignment in a Map
+    :=              Reassign value of existing key or extract value from a Map argument.
+
+Data Types:
+-----------
+    Tuples:
+    -------
+        Tuples are immutable groupings of elements denoted by enclosing within curly braces {}.
+        Tuples can contain any number of elements and can be nested to any dimension.  Each
+        element can be any valid Erlang term.
+        E.g.
+            {keith, {age, 31}, {height, {inch, 75}}}
+
+        Tuples are used whenever C might use a struct.
+
+    Lists:
+    ------
+        Lists are ordered collections of elements denoted by enclosing within square brackets [].
+        Lists are mutable - i.e. their size and element values can change.
+        One handy list operator is the 'list divider', represented by a vertical bar |
+            [Elem1, Elem2 | Remainder] = [42, 29, 101, 6, 33].
+
+        No Strings:
+        -----------
+            Erlang doesn't have strings!  Instead, you can (conveniently) represent strings as a
+            list of unicode characters.  For example, enter this into the Erlang shell.
+                [104, 101, 108, 108, 111, 32, 119, 111, 114, 108, 100].
+
+    Maps:
+    -----
+        A map is a set of associations between keys and values (like a dict or association).
+        When creating a new key-value association, you must use the '=>' assignment operator. When
+        updating the value associated with an existing key, you must use the ':=' operator.
+        E.g.
+            M = #{ "key" => 42 }.           Assigns a new map to the variable M.
+            M#{"key" := 17}.                Returns a copy of M with the value of "key" set to 17
+
+        If a map is passed as an argument to a function, a particular value can be fetched using
+        the ':=' operator.
+            myfunction(#{thingy := T}) ->       Copy the value associated with key 'thingy' to 'T'
+                T + 10.
+
+Functions:
+----------
+    Variables:
+    ----------
+        In Erlang, function arguments which can have a value are called "variables."
+        The names of variables must start with a capital letter.
+
+    Atoms:
+    ------
+        Atoms are not variables.  They are simply names passed as a function argument.
+        The name of the atom can determine the behavior of the function.  E.g.
+            convert(50.8, inch).
+            convert(2, cm).
+        In the above example, the function 'convert()' can have different definitions based on
+        which atom is passed as the second argument.
+
+    Definition:
+    -----------
+        functionName(args) ->
+            body;
+            more body.
+
