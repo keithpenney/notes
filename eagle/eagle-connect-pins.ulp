@@ -1,0 +1,100 @@
+#usage "<b>Testing - Connect pins to pads based on text file</b>\n"
+       "<p>"
+       "<author>Keith Penney</author>"
+
+if (!deviceset) {
+  dlgMessageBox(":This ULP only runs in the 'device' context.");
+  exit(0);
+}
+
+int nHEADER_LINES = 3;  // How many header lines to ignore
+string fileName = "";
+
+string lines[];    // This will hold all the lines of the read file
+fileName = dlgFileOpen("Select a File", "");
+int nLines = fileread(lines, fileName);
+/*
+string ppads[];     // Global collection of pin pads
+string pnames[];    // Global collection of pin names
+int pins = 0;       // Pin counter
+
+string fields[];
+
+for (int n = 0; n < nLines; n++) {
+  // Increment over each line
+  if (n >= nHEADER_LINES) {     // Ignoring headers
+    // split the string by spaces
+    strsplit(fields, lines[n], ' ');    // Let's see what this returns.
+    if (fields[0] != "") {
+      ppads[pins] = fields[0];
+      pnames[pins] = fields[1];
+      pins++;
+    }
+  }
+}
+*/
+string ppads[];     // Global collection of pin pads
+string pnames[];    // Global collection of pin names
+string pbanks[];    // Global collection of pin banks
+string unique_banks[];  // Keep only the unique bank names
+int pins = 0;       // Pin counter
+int banks = 0;      // Counter for unique_banks
+
+string fields[];
+unique_banks[banks++] = "-ALL-";
+
+for (int n = 0; n < nLines; n++) {
+  // Increment over each line
+  if (n >= nHEADER_LINES) {     // Ignoring headers
+    // split the string by spaces
+    strsplit(fields, lines[n], ' ');    // Let's see what this returns.
+    if (fields[0] != "") {
+      ppads[pins] = fields[0];
+      pnames[pins] = fields[1];
+      pbanks[pins] = fields[3];
+      int inbanks = 0;
+      for (int m = 0; m < banks; m++) {
+        if (pbanks[pins] == unique_banks[m]) {
+          inbanks = 1;
+        }
+      }
+      if (inbanks == 0) {
+        unique_banks[banks++] = pbanks[pins];
+      }
+      pins++;
+    }
+  }
+}
+
+string cmdfull;
+string cmd = "";
+
+int connectpins = 0;
+
+for (n = 0; n < pins; n++) {
+  if (pnames[n] != "NC") {
+    sprintf(cmd, "CONNECT %s.%s %s;", pbanks[n], pnames[n], ppads[n]);
+    cmdfull += cmd;
+    connectpins++;
+  }
+}
+
+   // Demo Text Editor Box
+   string sout;
+   //sprintf(sout, "I counted %d pins.\nFirst 2 pins:\n%s\t%s\n%s\t%s\n", pins, ppads[0], pnames[0], ppads[1], pnames[1]);
+   sprintf(sout, "Connecting %d pins.\n", connectpins);
+   //sprintf(sout, "The first 5 fields in line 5:\n%s\n%s\n%s\n%s\n%s\n", fields[0], fields[1], fields[2], fields[3], fields[4]);
+   dlgDialog("Text Editor Box") {
+      dlgTextEdit(sout);
+      dlgHBoxLayout {
+         dlgPushButton("+Ok") {
+            dlgAccept();
+            output("test.txt", "wt") {
+               printf(cmd);
+               }
+            };
+         dlgPushButton("-Cancel") dlgReject();
+         }
+      };
+   //exit("PIN 'testpin' (0 0);");
+   exit(cmdfull);

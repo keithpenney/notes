@@ -1,0 +1,122 @@
+#usage "<b>Testing - Import and parse file of pin name mapping</b>\n"
+       "<p>"
+       "<author>Keith Penney</author>"
+
+// THIS PROGRAM IS PROVIDED AS IS AND WITHOUT WARRANTY OF ANY KIND, EXPRESSED OR IMPLIED
+
+if (!symbol) {
+  dlgMessageBox(":This ULP only runs in the 'symbol' context.");
+  exit(0);
+}
+
+int nHEADER_LINES = 3;  // How many header lines to ignore
+string fileName = "";
+
+string lines[];    // This will hold all the lines of the read file
+fileName = dlgFileOpen("Select a File", "");
+int nLines = fileread(lines, fileName);
+
+string ppads[];     // Global collection of pin pads
+string pnames[];    // Global collection of pin names
+string pbanks[];    // Global collection of pin banks
+string unique_banks[];  // Keep only the unique bank names
+int pins = 0;       // Pin counter
+int banks = 0;      // Counter for unique_banks
+
+string fields[];
+unique_banks[banks++] = "-ALL-";
+
+for (int n = 0; n < nLines; n++) {
+  // Increment over each line
+  if (n >= nHEADER_LINES) {     // Ignoring headers
+    // split the string by spaces
+    strsplit(fields, lines[n], ' ');    // Let's see what this returns.
+    if (fields[0] != "") {
+      ppads[pins] = fields[0];
+      pnames[pins] = fields[1];
+      pbanks[pins] = fields[3];
+      int inbanks = 0;
+      for (int m = 0; m < banks; m++) {
+        if (pbanks[pins] == unique_banks[m]) {
+          inbanks = 1;
+        }
+      }
+      if (inbanks == 0) {
+        unique_banks[banks++] = pbanks[pins];
+      }
+      pins++;
+    }
+  }
+}
+
+/*
+void strcpy(string dest, string src, int elems)
+{
+  for (int n = 0; n < elems; n++) {
+    dest[n] = src[n];
+  }
+  return;
+}
+*/
+
+string cmdfull;
+string cmd = "";
+
+real xcoord, ycoord;
+real xstart = 0;
+real ystart = 0;
+real dx = 0;
+real dy = -0.1;
+int pinnum = 0;
+
+/*
+for (n = 0; n < pins; n++) {
+  if (pnames[n] != "NC") {
+    xcoord = xstart + pinnum*dx;
+    ycoord = ystart + pinnum*dy;
+    sprintf(cmd, "PIN '%s' (%4f %4f);", pnames[n], xcoord, ycoord);
+    cmdfull += cmd;
+    pinnum++;
+  }
+}
+*/
+
+string build_cmd(int nselectbank) {
+  string selected_bank = unique_banks[nselectbank];
+  string cmdout = "";
+  for (n = 0; n < pins; n++) {
+    if (pnames[n] != "NC") {
+      if (pbanks[n] == selected_bank | nselectbank == 0) {
+        xcoord = xstart + pinnum*dx;
+        ycoord = ystart + pinnum*dy;
+        sprintf(cmd, "PIN '%s' (%4f %4f);", pnames[n], xcoord, ycoord);
+        cmdout += cmd;
+        pinnum++;
+      }
+    }
+  }
+  return cmdout;
+}
+
+// Demo Text Editor Box
+string sout;
+
+sprintf(sout, "I counted %d pins.\n\nSelect the desired bank below.", pins);
+
+string testitems[] = {"Hello", "You", "Combo", "Box"};
+int item;
+
+dlgDialog("Results") {
+  dlgTextEdit(sout);
+  dlgHBoxLayout {
+    dlgComboBox(unique_banks, item);
+    dlgPushButton("+Ok") {
+      dlgAccept();
+      //build_cmd(item, cmdfull);
+      cmdfull = build_cmd(item);
+    }
+    dlgPushButton("-Cancel") dlgReject();
+    }
+  };
+//exit("PIN 'testpin' (0 0);");
+exit(cmdfull);

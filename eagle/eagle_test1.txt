@@ -1,0 +1,5 @@
+Device/Package xc7z010clg400 9/18/2012 09:50:56                                                                                                           
+                                                                                                                
+Pin  Pin Name                 Memory Byte Group  Bank               VCCAUX Group  Super Logic Region  I/O Type  No-Connect
+R11  DONE_0                   NA                 0                  NA            NA                  CONFIG    NA
+M9   DXP_0                    NA                 0                  NA            NA                  CONFIG    NA
