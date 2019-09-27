@@ -41,11 +41,17 @@ Copper Pours:
     Select Tools->Ratsnest to fill.
 
 Eagle User Language Script:
-    Eagle has a built-in user language that looks a lot like C++ for scripting and automating jobs.
-    See the help menu if you're curious.
+    Eagle has a built-in user language which is a very limited variant of C (no pointers, no structs).
+    They have some useful builtin string manipulation, but not enough to make an effective parser.  See the
+    example .ulp files for more.
+    The user language reference is included in the help menu.
 
 Import Images:
     Images can be imported via ULP scripts.
     For fills, use "import-bmp.ulp"
     For line drawings, use "import-dxf.ulp"
     Regardless, scaling will likely be necessary.  Make sure to save before executing!
+
+Layers:
+    Keepout:    No components should be placed in the polygon.
+    Restrict:   No copper should be laid in the polygon.
