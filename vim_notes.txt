@@ -214,6 +214,9 @@ c$ = "change" to end of line.
 :e $HOME/.vimrc                     Edit (or create) the user vimrc file (Unix/Linux)
 :e $HOME/_vimrc                     Edit (or create) the user vimrc file (Windows)
 
+:echo $HOME                         Echo the value of the $HOME variable
+:echo $VIM                          Echo the value of the $VIM variable
+
 =======================================
 --------- EXTERNAL COMMANDS -----------
 =======================================
@@ -230,6 +233,7 @@ c$ = "change" to end of line.
 =======================================
 
 https://www.ibm.com/developerworks/library/l-vim-script-1/index.html
+http://learnvimscriptthehardway.stevelosh.com/
 
 :help vim-script-intro              An introduction to Vimscript (run from inside Vim).
 :help keycodes                      Show a list of keycodes Vim can interpret.
@@ -251,6 +255,17 @@ Key Mapping:
     The built-in function 'nmap' (Normal-mode key MAPping) above maps the key combination ;s to the Vim script.
     Of course, if this line is itself in a Vim script, the leading colon : is dropped.
     Also note, Vim interprets the character combination "<CR>" as a carriage return.
+
+Executing Vim Commands in Vimscript:
+    :normal G                       Change to normal mode and execute the 'G' command (as if it were pressed)
+                                    This would move the cursor to the bottom of the file if 'G' has not been
+                                    re-mapped.
+    :normal! G                      The '!' after 'normal' ignores any key remappings that have been defined
+                                    either in the current session or in the .vimrc file.  This would ALWAYS
+                                    move the cursor to the bottom of the file.
+
+    :execute "echo 'hello world'"   Executes a string as if it were vimscript (in this case :echo 'hello world')
+    :execute "normal! G"            Executes the string 'normal! G' - moves the cursor to the buffer bottom
 
 Vimscript Statement Syntax:
     Vimscript statements are terminated by a newline character (like Python or Shell scripts).
@@ -279,3 +294,27 @@ Variables:
         let langs = ['C', 'Python', 'Go', 'VHDL']
         let favorites = {'color':'blue', 'number':3}
         "- - End Example - -"
+
+Comparisons:
+    >                               Integer comparison 'greater than'(works for strings?  What would it do?)
+    <                               Integer comparison 'less than'
+    ==                              Test for equality - depends on case-sensitivity settings for strings
+    ==?                             Test for equality - always case-insensitive
+    ==#                             Test for equality - always case-sensitive
+
+Conditionals and Loops:
+    if CONDITION                    "IF statement
+      ...
+    elsif OTHERCONDITION
+      ...
+    endif                           "End the IF statement
+
+    for i in [1, 2, 3, 4]           "FOR loop
+      ...
+    endfor                          "End the FOR loop
+
+Function Definitions:
+    function HelloWorld(name)       "Function 'HelloWorld' takes argument 'name'
+      echom "Hello " . a:name       "Echo to screen and message log 'Hello ' concatenated with 'name'
+    endfunction                     "End the function definition
+

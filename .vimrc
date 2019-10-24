@@ -19,3 +19,16 @@ endif
 set list
 "Note that we can toggle whitespace visibility with F5
 nmap <F5> :set list!
+
+"This function inserts an underline immediately following the current line
+"copying the same leading whitespace to make it look right
+function Underline()
+  let currentline = getline('.')
+  let nspaces = match(currentline, '[^ \t]')
+  let nchars = strlen(currentline) - nspaces
+  let uline = repeat(' ', nspaces) . repeat('-', nchars)
+  call append(line("."), uline)
+endfunction
+
+"We'll map this function to <F6> for now
+nmap <F6> :call Underline()
