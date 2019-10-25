@@ -24,10 +24,11 @@ nmap <F5> :set list!
 "copying the same leading whitespace to make it look right
 function Underline()
   let currentline = getline('.')
-  let nspaces = match(currentline, '[^ \t]')
-  let nchars = strlen(currentline) - nspaces
-  let uline = repeat(' ', nspaces) . repeat('-', nchars)
-  call append(line("."), uline)
+  let nspaces = match(currentline, '[^ \t]')                "Get the first non-whitespace character index
+  let nchars = strlen(currentline) - nspaces                "Calculate the number of non-whitespace chars
+  let uline = repeat(' ', nspaces) . repeat('-', nchars)    "Build the underline string
+  call append(line("."), uline)                             "Append the underline
+  "execute "normal! o"                                       "Jump to the next line and re-enter input mode
 endfunction
 
 "We'll map this function to <F6> for now

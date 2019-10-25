@@ -234,6 +234,7 @@ c$ = "change" to end of line.
 
 https://www.ibm.com/developerworks/library/l-vim-script-1/index.html
 http://learnvimscriptthehardway.stevelosh.com/
+https://vimhelp.org/usr_41.txt.html#function-list
 
 :help vim-script-intro              An introduction to Vimscript (run from inside Vim).
 :help keycodes                      Show a list of keycodes Vim can interpret.
