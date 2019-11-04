@@ -190,6 +190,14 @@ cw = ce = "change" to end of word (deletes until end of word then enters insert 
 c$ = "change" to end of line.
 
 =======================================
+-------- STRING MANIPULATION ----------
+=======================================
+
+~ = Toggle the case of the character under the cursor
+
+n~ = Toggle the case of the next 'n' characters starting from the cursor
+
+=======================================
 ------------ CODING TOOLS -------------
 =======================================
 
