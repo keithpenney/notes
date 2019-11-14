@@ -27,6 +27,24 @@ Eagle interprets certain characters in names as special syntax:
     !name                   If a name (e.g. a net name) is proceded by '!', it is interpreted as "active low" and
                             displayed with an overbar above the name.
 
+Annotation Variables:
+    Eagle defines the following automatically populated text variables.
+    >name                   The name of the object                      symbol/package editor
+    >value                  The value of the object                     symbol/package editor
+    >sheetnr                The sheet number in schematic               schematic editor
+    >sheets                 The total sheets in schematic               schematic editor
+    >sheet                  >sheetnr/>sheets                            schematic editor
+    >xref                   Cross-reference.                            schematic/board editor
+    >contact_xref           Contact cross-reference.                    schematic/board editor
+    >assembly_variant       The current assembly variant                schematic/board editor
+    >drawing_name           The drawing name.                           all
+
+    Cross-Referencing:
+        The following variables are also reserved for cross-referencing.
+        %S                  The sheet number
+        %C                  The column on the sheet
+        %R                  The row on the sheet
+
 Sheets:
     It's handy to break up a big schematic into sheets, each with some unifying function (e.g. voltage rails, cap bank)
     To move an item from one sheet to another, use GROUP MOVE (highlight a group then CTRL+Right Click to move)
