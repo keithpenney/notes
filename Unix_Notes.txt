@@ -904,8 +904,14 @@ User Management:
             userdel                             A lower-level utility for when 'deluser' is not available.
             addgroup
             delgroup
+            usermod -a -G GROUP USER            Add an existing user to an existing group.
 
             If you really need to edit this file, use 'vipw' which will make a locked backup copy during editing.
+
+        To view information about the users and groups defined on a system, use these commands:
+            users                               List the currently logged-in users
+            groups                              List the groups associated with the current user.
+            id USERNAME                         View the UID, GID, and groups associated with USERNAME
 
     /etc/shadow
         This file replicates many of the features of /etc/passwd but in a more secure format.
