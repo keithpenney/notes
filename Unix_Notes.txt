@@ -92,6 +92,7 @@ Common Shell Commands:
     cp -rp FROM TO              Copy a folder (-r recursive) from path FROM to path TO (-p preserve permissions)
     date [OPTIONS]              Return the current date/time. +%s: seconds since 1/1/1970
     df [PATH]                   List filesystem, mount point, device and stats of "PATH" (defaults to all)
+    diff [-r] file0 file1       Diff two files (or two directories using the -r flag)
     dmesg                       List the last kernel messages (long output! Pipe to 'less'?)
     dpkg -i filename.deb        Install a '.deb' file (always 'sudo' this one).
     du [-s] *                   List disk usage of every subdirectory of the current directory (-s: summary).
