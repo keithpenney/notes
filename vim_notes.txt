@@ -53,6 +53,11 @@ M = move cursor to the "middle" line on the screen
 
 L = move cursor to the "lowest" line on the screen
 
+m = File mark.  Follow with any character. Lowercase characters
+    are local markers.  Uppercase characters are global.
+
+` = Jump to a previously defined file mark (see 'm' above).
+
 =======================================
 ------------ THE VIEWPANE -------------
 =======================================
@@ -202,6 +207,22 @@ n~ = Toggle the case of the next 'n' characters starting from the cursor
 =======================================
 
 % = parenthesis matching; highlight a (, {, or [ and hit % to highlight the matching ), }, or ]
+
+=======================================
+--------- MULTI-FILE EDITING ----------
+=======================================
+
+:e FILENAME = :edit FILENAME = Close current file and open FILENAME for editing.
+
+vim file1.txt file2.c file3.py ...  = Edit multiple files sequentially
+
+:n = :next = Switch to the next file in the list
+
+:p = :previous = Switch to the previous file in the list
+
+:f = :first = Switch to the first file in the list
+
+:l = :last = Switch to the last file in the list
 
 =======================================
 ---------- EDITOR SETTINGS ------------

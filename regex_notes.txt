@@ -1,0 +1,97 @@
+Regular Expressions (Regex) Notes
+
+Matching Characters
+  .
+    Generic Character. Matches any character except a newline (i.e. [^\n])
+
+  ^
+    Matches only at the beginning of a line.  Note, if multi-line mode is
+    supported, will also match a string immediately following a newline char.
+    Examples:
+      ^From will match 'From' only if it occurs at the beginning of a line.
+    Alternate definition: Set complement (only within a character set [^...])
+
+  $
+    Matches only at the end of a line (i.e. the last char of a string, or
+    immediately before a newline char).
+    Examples:
+      to$ will match 'to' only if it occurs at the end of a line.
+
+  *
+    Specifies that the previous character can occur zero or more times.
+    Examples:
+      ca*t will match 'cat', 'ct', 'caaaaaaat', etc...
+
+  +
+    Specifies that the previous character can occur one or more times.
+    Examples:
+      ca+t will match 'cat', 'caaat', 'caaaaaat', etc... but not 'ct'
+
+  ?
+    Specifies that the previous character can occur zero times or one time.
+    Examples:
+      ca?t will match only 'cat' and 'ct' (not 'caat', etc...)
+
+  {}
+    Specifies that the previous character must occur a number of times within
+    the given range.
+    Note: if we do not specify a value, default values are assumed.   I.e.
+    {3,} is equivalent to {3,infinity}
+    {,3} is equivalent to {0,3}
+    Examples:
+      ca{1,3}t will match 'cat', 'caat', and 'caaat', but not 'ct', or 'caaaat', etc...
+      
+  []
+    Character Class. Defines a set of matching characters.
+    Metacharacters (matching characters) are not active inside a character class.
+    Examples:
+      [ABC] will match 'A', 'B', or 'C'
+      [A-C] will match 'A', 'B', or 'C'
+      [z3$] will match 'z', '3', or '$' ($ is no longer a metacharacter)
+      [^123] will match any single character except '1', '2', or '3'
+      [12^3] will match '1', '2', '^', or '3'
+
+  \
+    Escape Character.  Can be used to specify special pre-defined sets or to
+    escape the meaning of a metacharacter.
+    Special Matching Classes:
+      Code  Behavior                            Equivalent Character Class
+      ----  --------                            --------------------------
+      \d    Matches any decimal digit           [0-9]
+      \D    Matches any non-digit character     [^0-9]
+      \s    Matches any whitespace character    [ \t\n\r\f\v]
+      \S    Matches any non-whitespace char     [^ \t\n\r\f\v]
+      \w    Matches any alphanumeric character  [a-zA-Z0-9_]
+      \W    Matches any non-alphanumeric char   [^a-zA-Z0-9_]
+      
+
+  |
+    Logical OR Operator.  Specifies that a string matches a patter if it matches
+    one of two sub-patterns logically OR'd with this operator.
+    Examples:
+      dog|cat will match 'dog' or 'cat' and nothing else
+
+  ()
+    Grouping.  Combines an expression into a sub-expression which can be nested
+    or combined with other expressions.
+
+Zero-Width Assertions:
+  These characters match a position within a string without consuming a character.
+  Thus, the same zero-width assertion should never be repeated (because if it
+  matches once, it will match agagin).
+
+  \A
+    Matches at the start of a string.
+
+  \Z
+    Matches at the end of a string.
+
+  \b
+    Matches at a word boundary.
+    NOTE! In Python, you must use 'raw' strings to allow use of this assertion
+    since it collides with Python's 'backspace' escape character.
+    Example:
+      \bface\b will match "is my face ok?" but will not match "surface effacement"
+
+  \B
+    The opposite of \b.  Only matches when not at a word boundary.
