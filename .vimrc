@@ -68,7 +68,7 @@ function NextAtIndent(up)
     if linecontents[0:currcol] =~ '\S'   "If the line up to the current column is not all whitespace
       "echom "Line hit: " . linecontents[0:currcol]
       let newline = n               "Save the destination line
-      let newcol = match(linecontents, '\S')  "Get the index of the first non-whitespace char in the line
+      let newcol = match(linecontents, '\S') + 1 "Get the index of the first non-whitespace char in the line
       break
     endif
   endfor
