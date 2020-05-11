@@ -47,6 +47,10 @@ Ctrl+b = Page up (page "B"ackward)
 
 Ctrl+f = Page down (page "F"orward)
 
+Ctrl+u = Half-page Up
+
+Ctrl+d = Half-page Down
+
 H = move cursor to the "highest" line on the screen
 
 M = move cursor to the "middle" line on the screen
@@ -57,6 +61,10 @@ m = File mark.  Follow with any character. Lowercase characters
     are local markers.  Uppercase characters are global.
 
 ` = Jump to a previously defined file mark (see 'm' above).
+
+Ctrl+] = follow a link (if enabled)
+
+Ctrl+o = Ctrl+t = Return to previous location
 
 =======================================
 ------------ THE VIEWPANE -------------
@@ -286,6 +294,32 @@ Key Mapping:
     Of course, if this line is itself in a Vim script, the leading colon : is dropped.
     Also note, Vim interprets the character combination "<CR>" as a carriage return.
 
+  Key Mapping:
+    Note! Don't add end-of-line comments to mapping. It'll make life miserable.
+    nmap <key> <command>            "Map key <key> to command <command> in NORMAL mode
+    vmap <key> <command>            "Map key <key> to command <command> in VISUAL mode
+    imap <key> <command>            "Map key <key> to command <command> in INSERT mode
+    nnoremap <keycombo> <command>   "<keycombo> must be pressed in quick succession for mapping to apply
+    vnoremap <keycombo> <command>   "<keycombo> must be pressed in quick succession for mapping to apply
+    inoremap <keycombo> <command>   "<keycombo> must be pressed in quick succession for mapping to apply
+
+    Keys and Key Combos:
+      Example key designation:
+        a                           "The key 'a'
+        z                           "The key 'z'
+        A                           "The key 'A' (uppercase, Shift+A)
+        <esc>                       "The escape key
+        <c-d>                       "Ctrl+d
+
+      Key combos are any valid key designations strung together, i.e:
+        af                          "'a' followed quickly by 'f'
+        jj                          "'j' pressed twice in quick succession
+        <esc><c-t>                  "Escape key followed quickly by Ctrl+t
+
+    Silent Mapping:
+      We can follow the map keyword with '<silent>' to suppress any console output
+      occurring in the function call.
+
 Executing Vim Commands in Vimscript:
     :normal G                       Change to normal mode and execute the 'G' command (as if it were pressed)
                                     This would move the cursor to the bottom of the file if 'G' has not been
@@ -315,36 +349,118 @@ Vimscript Statement Syntax:
         echo "this is a string" |" and this is a comment!
         " - - End Example - - "
 
+Echoing Text:
+  echo "This goes to temporary output"
+  echom "This goes both to temporary output and to the message queue"
+
+  From within a Vim editor, you can view the message queue with
+    :messages
+
+Strings:
+  Strings use "double quotes" in general.
+  Literal strings use 'single quotes' which avoids expansion of any escape sequences
+  within the string.
+    The one special character combination in a literal string is '' which yields a
+    single quote '.
+
+  Concatenation:
+    echo "Hello" . " world"   |"Echos "Hello world" to stdout
+    Note that if we try to use a + sign, it will attempt to coerce the strings into
+    numbers and sum the numbers.
+
 Variables:
-    Assignment:
-        Variable assignment uses the keyword 'let'.
-        "- - - Example - - -"
-        let name = "Keef"
-        let age = 12
-        let langs = ['C', 'Python', 'Go', 'VHDL']
-        let favorites = {'color':'blue', 'number':3}
-        "- - End Example - -"
+  Assignment:
+    Variable assignment uses the keyword 'let'.
+    "- - - Example - - -"
+    let name = "Keef"
+    let age = 12
+    let langs = ['C', 'Python', 'Go', 'VHDL']
+    let favorites = {'color':'blue', 'number':3}
+    "- - End Example - -"
+
+  Boolean:
+    In boolean contexts (i.e. conditional statements), vimscript treats the
+    following as true:
+      1
+      "1"
+      "8675209"
+      "42isagoodnumber"
+
+    And the folowing as false:
+      0
+      "0"
+      "myfavoritenumberis42"
+
+    If a boolean context is to evaluate a string for 'truthiness', it attempts
+    to coerce the string into a number.  If the string starts with a number,
+    that will result in said number (with non-numerical characters ignored).
+    If the string starts with a non-number (i.e. a letter), it is assumed to
+    not represent a number and the result is 0, thus false.
+
+  Lists and Indexing:
+    Lists/arrays are defined with square brackets, i.e.
+      let mylist = ['hello', 123, ['this', 'one', 'is', ['nested!', 42]]]
+
+    Indexing and slicing works like in Python, but more permissive, i.e.
+      let mylist = [100, 200, 300, 400]
+      :echo mylist[0]     "Echos 100
+      :echo mylist[-2]    "Echos 300
+      :echo mylist[1:2]   "Echos [200, 300] 
+                          "Note that the upper limit is included (unlike Python)
+      :echo mylist[1:100] "Echos [200, 300, 400]
+                          "The upper limit can be exceeded
+
+    Note, strings can be indexed/sliced just like lists.
 
 Comparisons:
-    >                               Integer comparison 'greater than'(works for strings?  What would it do?)
-    <                               Integer comparison 'less than'
-    ==                              Test for equality - depends on case-sensitivity settings for strings
-    ==?                             Test for equality - always case-insensitive
-    ==#                             Test for equality - always case-sensitive
+  >                       Integer comparison 'greater than'(works for strings?  What would it do?)
+  <                       Integer comparison 'less than'
+  ==                      Test for equality - depends on case-sensitivity settings for strings
+  ==?                     Test for equality - always case-insensitive
+  ==#                     Test for equality - always case-sensitive
+  =~                      Test for regexp matching
+  !~                      Test for regexp not matching
 
 Conditionals and Loops:
-    if CONDITION                    "IF statement
-      ...
-    elsif OTHERCONDITION
-      ...
-    endif                           "End the IF statement
+  if CONDITION                    "IF statement
+    ...
+  elsif OTHERCONDITION
+    ...
+  endif                           "End the IF statement
 
-    for i in [1, 2, 3, 4]           "FOR loop
-      ...
-    endfor                          "End the FOR loop
+  for i in [1, 2, 3, 4]           "FOR loop
+    ...
+  endfor                          "End the FOR loop
+
+  Vimscript uses the standard 'break' keyword to break out of a loop.
 
 Function Definitions:
-    function HelloWorld(name)       "Function 'HelloWorld' takes argument 'name'
-      echom "Hello " . a:name       "Echo to screen and message log 'Hello ' concatenated with 'name'
-    endfunction                     "End the function definition
+  Note! If a function is unscoped (not exactly sure what that means in this context),
+  its name must start with a capital letter.  In practice, all functions should start
+  with a capital letter anyhow.
 
+  function HelloWorld(name)       "Function 'HelloWorld' takes argument 'name'
+    echom "Hello " . a:name       "Echo to screen and message log 'Hello ' concatenated with 'name'
+    return 42
+  endfunction                     "End the function definition
+  call HelloWorld("keef")         "Call that bad boy, ignoring the returned value.
+  let someNumber = HelloWorld("keef") "On the RHS, we don't need to use 'call' (I think)
+
+  Arguments:
+    Note that when we refer to an argument within a function, we need to prepend the
+    arg name by 'a:' to indicate that we are looking for this indentifier in argument
+    scope, not variable scope.
+
+    Varargs:
+      We can also define functions that take any number of arguments with the varargs
+      elipses keyword '...'.
+        function foo(bar, ...)         "Varargs syntax
+          return a:bar + a:0 + a:1     "See below
+        endfunction
+
+      In this case, the arguments end up in argument scope numbered, i.e.:
+        a:0       "The first argument passed
+        a:1       "The second argument passed
+        a:000     "A special list containing all the arguments passed
+
+  Functions that do not have a 'return' statement implicitly return 0.
