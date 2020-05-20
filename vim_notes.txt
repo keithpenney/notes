@@ -211,26 +211,55 @@ c$ = "change" to end of line.
 n~ = Toggle the case of the next 'n' characters starting from the cursor
 
 =======================================
+--------- MULTI-FILE EDITING ----------
+=======================================
+:e FILENAME = :edit FILENAME = Close current file and open FILENAME for editing.
+
+vim file1.txt file2.c file3.py ...  Edit multiple files sequentially
+
+:n = :next                          Switch to the next file in the list
+
+:p = :previous                      Switch to the previous file in the list
+
+:f = :first                         Switch to the first file in the list
+
+:l = :last                          Switch to the last file in the list
+
+:split FILENAME                     Open FILENAME in a split window (horizontally)
+
+:vsplit FILENAME                    Open FILENAME in a split window (vertically)
+
+<Ctrl> + W + j                      Move cursor to split window below
+
+<Ctrl> + W + k                      Move cursor to split window above
+
+<Ctrl> + W + h                      Move cursor to split window to the left
+
+<Ctrl> + W + l                      Move cursor to split window to the right
+
+:tabedit FILENAME                   Open FILENAME for editing in a new tab
+
+:tabfind FILENAME                   Search path for FILENAME and open for editing in a new tab
+
+:tabclose                           Close the current tab
+
+:tabonly                            Close all other tabs except the current one
+
+:tabs                               List all open tabs
+
+:tabn                               Switch to the next tab (keymapped to 'gt' in normal mode)
+
+:tabp                               Switch to the previous tab (keymapped to 'gT' in normal mode)
+
+:tabfirst                           Switch to the first tab
+
+:tablast                            Switch to the last tab
+
+=======================================
 ------------ CODING TOOLS -------------
 =======================================
 
 % = parenthesis matching; highlight a (, {, or [ and hit % to highlight the matching ), }, or ]
-
-=======================================
---------- MULTI-FILE EDITING ----------
-=======================================
-
-:e FILENAME = :edit FILENAME = Close current file and open FILENAME for editing.
-
-vim file1.txt file2.c file3.py ...  = Edit multiple files sequentially
-
-:n = :next = Switch to the next file in the list
-
-:p = :previous = Switch to the previous file in the list
-
-:f = :first = Switch to the first file in the list
-
-:l = :last = Switch to the last file in the list
 
 =======================================
 ---------- EDITOR SETTINGS ------------
@@ -241,7 +270,6 @@ vim file1.txt file2.c file3.py ...  = Edit multiple files sequentially
 :set tabstop=4                      Set the displayed tab size to 4 characters
 
 :set shiftwidth=4                   Set the displayed indent width to 4 characters (not sure how this is different)
-
                                     Make these settings permanent by adding the lines to your vimrc file.
 
 =======================================
@@ -272,6 +300,7 @@ vim file1.txt file2.c file3.py ...  = Edit multiple files sequentially
 https://www.ibm.com/developerworks/library/l-vim-script-1/index.html
 http://learnvimscriptthehardway.stevelosh.com/
 https://vimhelp.org/usr_41.txt.html#function-list
+https://devhints.io/vimscript
 
 :help vim-script-intro              An introduction to Vimscript (run from inside Vim).
 :help keycodes                      Show a list of keycodes Vim can interpret.
@@ -319,6 +348,20 @@ Key Mapping:
     Silent Mapping:
       We can follow the map keyword with '<silent>' to suppress any console output
       occurring in the function call.
+
+    Leader Character:
+      To provide a wide range of key mappings (much greater than the number of keys accessible on
+      your keyboard), vim allows mapping of key combinations typed in quick succession (we saw this
+      above with 'noremap'.  It's good to use a custom 'starting character' for all these
+      combinations so we avoid vim waiting around after you press a key to see if you'll press
+      another shortly after.
+
+      Vim defines a custom key called <leader> which should be used for just this purpose (and can
+      be set to whatever you want).  We choose our leader character using the reserved variable
+      'mapleader', e.g.
+        let mapleader = ","
+      We can then map character combinations starting with our leader character using <leader>, e.g
+        nnoremap <leader>d dd
 
 Executing Vim Commands in Vimscript:
     :normal G                       Change to normal mode and execute the 'G' command (as if it were pressed)

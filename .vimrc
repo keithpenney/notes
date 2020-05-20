@@ -1,14 +1,124 @@
+" vimrc configuration file with a whole bunch of added stuff to browse note
+" files and function as a fully-fledged embedded IDE.
+
 set encoding=utf-8
 scriptencoding utf-8
 "Vimrc customization file
 
-"The below is all to set tabs to 4 characters and replace them with spaces
-set tabstop=4
-set shiftwidth=4
+" Add the $HOME/.vim folder on Windows machines
+" See :help feature-list
+if has('win32') || has('win64') || has('win32unix')
+  set runtimepath^=$HOME/.vim
+endif
+
+"General keymapping
+let mapleader = ';'  " Set the <leader> key to semicolon (;)
+
+" General view/edit settings
+set hlsearch    " Turn on search highlighting
+" The below is all to set tabs to 2 characters (except for Python files)
+" and replace them with spaces
+set tabstop=2
+set shiftwidth=2
+autocmd FileType python set tabstop=4
+autocmd FileType python set shiftwidth=4
 set softtabstop=0
 set expandtab
 set smarttab
 
+" -------------- Vundle Plugin Manager Settings --------------
+" Install Vundle with:
+" git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim
+"
+" Once Vundle is installed, run :PluginInstall to install the following from
+" github.
+
+if finddir($HOME . "/.vim/bundle/Vundle.vim") != ""
+  filetype off
+  set rtp+=$HOME/.vim/bundle/Vundle.vim
+  call vundle#begin()
+  Plugin 'VundleVim/Vundle.vim'
+  Plugin 'preservim/nerdtree'
+  Plugin 'jistr/vim-nerdtree-tabs'
+  " Plugin 'xolox/vim-misc'
+  " Plugin 'xolox/vim-easytags'
+  Plugin 'jsfaint/gen_tags.vim'
+  Plugin 'majutsushi/tagbar'
+  Plugin 'ctrlpvim/ctrlp.vim'
+  call vundle#end()
+  filetype plugin indent on
+
+endif
+
+let _bundleDir = $HOME . "/.vim/bundle/"
+function BundleExists(name)
+  if finddir(g:_bundleDir . a:name) != ""
+    return 1
+  else
+    return 0
+  endif
+endfunction
+
+let _pnerdtree = 0
+if finddir($HOME . "/.vim/bundle/nerdtree") != ""
+  let g:_pnerdtree = 1
+endif
+
+let _pnerdtreetabs = 0
+if finddir($HOME . "/.vim/bundle/vim-nerdtree-tabs") != ""
+  let g:_pnerdtreetabs = 1
+endif
+
+let _pvimmisc = 0
+if BundleExists("vim-misc")
+  let _pvimmisc = 1
+endif
+
+if has('win32') || has('win64') || has('win32unix')
+  let ctags_cmd = 'C:/toolchains/ctags/ctags.exe'
+else
+  let ctags_cmd = '/usr/local/bin/ctags'
+endif
+
+let _pgentags = 0
+if BundleExists("gen_tags.vim")
+  let _pgentags = 1
+  " Disable 'gtags' support
+  let g:gen_tags#ctags_bin = ctags_cmd
+  let g:loaded_gentags#gtags = 1
+  " Use the template below to customize options to ctags
+  " let g:gen_tags#ctags_opts = ['opt1', 'opt2', ...]
+endif
+
+let _pvimeasytags = 0
+if BundleExists("vim-easytags")
+  let _pvimeasytags = 1
+  set tags=./tags;,~/.vimtags
+  let g:easytags_events = ['BufReadPost', 'BufWritePost']
+  let g:easytags_async = 1
+  let g:easytags_dynamic_files = 2
+  let g:easytags_resolve_links = 1
+  let g:easytags_suppress_ctags_warning = 1
+  "let g:easytags_opts += ['-R']
+  let g:easytags_cmd = ctags_cmd
+endif
+
+let _ptagbar = 0
+if BundleExists("tagbar")
+  let _ptagbar = 1
+  let g:tagbar_ctags_bin = ctags_cmd
+endif
+
+" ------------------------------------------------------------
+
+" --------------------- Look and Feel ------------------------
+syntax on
+let g:solarized_termcolors=256
+" colorscheme solarized
+
+" ------------------------------------------------------------
+
+" -------------------- Custom Functions ----------------------
 "The below is to make whitespace visible using the prescribed characters
 "Using the argument 'space' requires version>7.4.710
 if has("patch-7.4.710")
@@ -17,14 +127,6 @@ else
     set listchars=eol:¬,tab:>·
 endif
 set list
-"Note that we can toggle whitespace visibility with F5
-nmap <F5> :set list!
-
-"This is a handy way to convert the current word to all UPPERCASE (Ctrl+K)
-nmap <c-k> viwU
-"And a complement to convert to all lowercase (Ctrl+L)
-nmap <c-l> viwu
-
 "This function inserts an underline immediately following the current line
 "copying the same leading whitespace to make it look right
 function Underline()
@@ -35,9 +137,6 @@ function Underline()
   call append(line("."), uline)                             "Append the underline
   "execute "normal! o"                                       "Jump to the next line and re-enter input mode
 endfunction
-
-"We'll map this function to <F6> for now
-nmap <F6> :call Underline()
 
 "This function searches for the next line (earlier in the file if 'up') which
 "has non-whitespace at or before the current cursor column and jumps to that line.
@@ -77,6 +176,49 @@ function NextAtIndent(up)
   call setpos('.', [0, newline, newcol, 0])
 endfunction
 
-"Let's map these to F7/F8 for testing
+" ------------------------------------------------------------
+
+" ---------------------- Key Mappings ------------------------
+  " Jump to next/previous indent with J/K
 nmap <silent> J :call NextAtIndent(0)<CR>
 nmap <silent> K :call NextAtIndent(1)<CR>
+
+  " Turn off syntax highlighting with ;h
+nnoremap <leader>h :nohls<CR>
+
+  "Note that we can toggle whitespace visibility with F5
+nmap <F5> :set list!<CR>
+
+  "This is a handy way to convert the current word to all UPPERCASE (Ctrl+K)
+nmap <c-k> viwU
+  "And a complement to convert to all lowercase (Ctrl+L)
+nmap <c-l> viwu
+
+  " Underline the current line (in a newline below)
+nmap <F6> :call Underline()<CR>
+
+nmap <c-r> :call system(ctags_cmd . "-R .")<CR>
+
+  " Some plugin-specific key mappings
+if _pnerdtree
+  " Display the NERDTree panel (if installed) with <leader>t
+  nmap <silent> <leader>t :NERDTreeTabsToggle<CR>
+  " This allows vim to close if the only thing open is NERDTree
+  autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
+endif
+
+if _pgentags
+  "nmap <c-r> :GenCtags
+endif
+
+if _ptagbar
+  " Display the tagbar (if installed) with <leader>b
+  nmap <silent> <leader>b :TagbarToggle<CR>
+endif
+
+  " Embedded-specific tools
+nmap <leader>m :call system("make")<CR>
+nmap <leader>c :call system("make clean")<CR>
+nmap <leader>f :call system("make openocd_flash")<CR>
+" ------------------------------------------------------------
+
