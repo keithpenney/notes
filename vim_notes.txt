@@ -96,6 +96,8 @@ zb = move the viewpane so that the current line is on bottom
 
 /thing = search file for "thing" and places cursor at the first instance of "thing"
 
+# = search file for word under cursor
+
 n = search again (move to next instance)
     can also type / + <ENTER>
 
@@ -254,6 +256,10 @@ vim file1.txt file2.c file3.py ...  Edit multiple files sequentially
 :tabfirst                           Switch to the first tab
 
 :tablast                            Switch to the last tab
+
+:edit = :e                          Reload currently open file
+
+:qa                                 Close all tabs
 
 =======================================
 ------------ CODING TOOLS -------------
