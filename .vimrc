@@ -47,11 +47,10 @@ if finddir($HOME . "/.vim/bundle/Vundle.vim") != ""
   Plugin 'ctrlpvim/ctrlp.vim'
   call vundle#end()
   filetype plugin indent on
-
 endif
 
 let _bundleDir = $HOME . "/.vim/bundle/"
-function BundleExists(name)
+function! BundleExists(name)
   if finddir(g:_bundleDir . a:name) != ""
     return 1
   else
@@ -116,6 +115,9 @@ syntax on
 let g:solarized_termcolors=256
 " colorscheme solarized
 
+" Enable the mouse
+set mouse=a
+
 " ------------------------------------------------------------
 
 " -------------------- Custom Functions ----------------------
@@ -129,7 +131,7 @@ endif
 set list
 "This function inserts an underline immediately following the current line
 "copying the same leading whitespace to make it look right
-function Underline()
+function! Underline()
   let currentline = getline('.')
   let nspaces = match(currentline, '[^ \t]')                "Get the first non-whitespace character index
   let nchars = strlen(currentline) - nspaces                "Calculate the number of non-whitespace chars
@@ -142,7 +144,7 @@ endfunction
 "has non-whitespace at or before the current cursor column and jumps to that line.
 "It's most useful for navigating text files formatted by indentation (i.e. Python
 "scripts).
-function NextAtIndent(up)
+function! NextAtIndent(up)
   "echom "NextAtIndent()"
   let currline = line('.')          "Get the current line number
   let lastline = line('$')          "Get the number of the last line in the file
@@ -176,12 +178,42 @@ function NextAtIndent(up)
   call setpos('.', [0, newline, newcol, 0])
 endfunction
 
+"This function searches for the next line (earlier in the file if 'up') which
+"contains a C function definition and jumps to it if found.
+function! NextCDef(up)
+  let currline = line('.')          "Get the current line number
+  let lastline = line('$')          "Get the number of the last line in the file
+  let newline = currline            "for both line and column
+  if a:up                           "If we are counting down (prior lines)
+    if currline == 0                "If called on line 0, just return
+      return 1
+    endif
+    let linerange = range(currline - 1, 0, -1)  "Otherwise, set the line range to decrement
+  else                              "If we are counting up (subsequent lines)
+    if currline == lastline         "If called at the bottom line, just return
+      return 1
+    endif
+    let linerange = range(currline + 1, lastline) "Otherwise, set the line range to increment
+  endif
+  for n in linerange                "Loop through the rest of the lines in the file
+    let linecontents = getline(n)   "Get the contents of the next line
+    if linecontents =~ '\v^\w+\s+\w+\('  "If the line matches a C function signature
+      let newline = n               "Save the destination line
+      break
+    endif
+  endfor
+  call setpos('.', [0, newline, 0, 0])
+endfunction
+
 " ------------------------------------------------------------
 
 " ---------------------- Key Mappings ------------------------
   " Jump to next/previous indent with J/K
 nmap <silent> J :call NextAtIndent(0)<CR>
 nmap <silent> K :call NextAtIndent(1)<CR>
+  " If editing a C file, instead jump to next/previous function def'n
+autocmd FileType c nnoremap <silent> <buffer> J :call NextCDef(0)<CR>
+autocmd FileType c nnoremap <silent> <buffer> K :call NextCDef(1)<CR>
 
   " Turn off syntax highlighting with ;h
 nnoremap <leader>h :nohls<CR>
@@ -197,7 +229,10 @@ nmap <c-l> viwu
   " Underline the current line (in a newline below)
 nmap <F6> :call Underline()<CR>
 
-nmap <c-r> :call system(ctags_cmd . "-R .")<CR>
+  " Just make :W do the same as :w (so annoying!)
+command! W :w
+
+"nmap <c-r> :call system(ctags_cmd . "-R .")<CR>
 
   " Some plugin-specific key mappings
 if _pnerdtree
