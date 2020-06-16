@@ -95,3 +95,20 @@ Zero-Width Assertions:
 
   \B
     The opposite of \b.  Only matches when not at a word boundary.
+
+Capture Groups:
+---------------
+  If we want to not only match a particular line of text but to extract a substring
+  from a matching line, we can use 'capture groups'.  We simply place parentheses ()
+  around the portion of the regex pattern that we want to match and a re.match object
+  will contain the n'th matching substring as match.group(n).
+
+  E.g.:
+    test = re.compile("My name is (\w+) and I am (\w+) years old.")
+    m = test.match("My name is Marbles and I am 200 years old.")
+    if m:
+        print(m.group(0))   # Prints the entire matching string
+        print(m.group(1))   # Prints 'Marbles'
+        print(m.group(2))   # Prints '200'
+
+

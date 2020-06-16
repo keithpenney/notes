@@ -253,6 +253,8 @@ vim file1.txt file2.c file3.py ...  Edit multiple files sequentially
 
 :tabp                               Switch to the previous tab (keymapped to 'gT' in normal mode)
 
+{i}gt                               Go to the i'th tab (i counts from 1)
+
 :tabfirst                           Switch to the first tab
 
 :tablast                            Switch to the last tab
