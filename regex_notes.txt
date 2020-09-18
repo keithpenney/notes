@@ -1,4 +1,4 @@
-Regular Expressions (Regex) Notes
+Regular Expressions (Regex) Notes (specific to Python re module)
 
 Matching Characters
   .
