@@ -80,7 +80,6 @@ Shell Shortcuts/Hotkeys/Key Bindings:
     ctrl + l        Clear screen
 
 Common Shell Commands:
-
     bg [PID]                    Continue a stopped process (optional process id PID) in the background.
     blkid                       View all block devices, UUIDs, and filesystem types.
     cat [file]                  Concatenate files or StdIn and print to StdOut or redirect.
@@ -1020,6 +1019,59 @@ Networking on Unix:
 
     The 'arp' command returns the ARP table, which is a list of IP addresses directly accessible to the
     machine (physically connected, no intervening gateway/router) and their associated hardware addresses.
+
+    NetworkManager:
+    ---------------
+      NetworkManager is a newer addition to the Unix/Linux world which provides a lot of high-level
+      control over networking and attempts to simplify network management.  There's a whole lot to it,
+      but here are some basic things I've found handy.
+
+      Connection Files:
+      -----------------
+        Connection files are stored in /etc/NetworkManager/system-connections
+        A file is generated for every network you join (if it is a mobile device you've taken many
+        places, you'll see a lot of familiar WIFI network names here).  You can also create connections
+        manually via the gui (i.e. GNOME) or tools like 'nmcli'.  Alternatively, you can create/edit a
+        connection file manually and apply the changes by reloading the connections with:
+
+          nmcli con reload
+
+        Example Connection File:
+        ------------------------
+          [connection]
+          id=local
+          uuid=939cba4e-b007-3377-8e8e-781296fe6feb
+          type=ethernet
+          autoconnect-priority=-999
+          interface-name=enxd8ec5e7460f4
+          permissions=
+
+          [ethernet]
+          mac-address-blacklist=
+
+          [ipv4]
+          address1=192.168.19.10/19
+          ignore-auto-dns=true
+          ignore-auto-routes=true
+          dns-search=
+          method=manual
+          route1=192.168.19.0/24
+
+          [ipv6]
+          addr-gen-mode=stable-privacy
+          dns-search=
+          method=auto
+
+diff and patch:
+    The 'diff' function output is actually the exact same syntax as a patchfile.  If the output
+    is redirected to a file, you can use it as a patchfile.
+    In all the commands below, we use the '-u' (unified) flag to tell diff to also output some
+    context lines (unchanged lines) to help patch locate the exact location of the change.
+    If we used '-u' for the diff command, we must use '-u' for the patch command.
+    diff -u fileOld fileNew                 # Show the difference between fileOld and fileNew
+    diff -u fileOld fileNew > changes.patch # Capture the output into patchfile 'changes.patch'
+    patch -u fileOld -i changes.patch       # Apply the changes in 'changes.patch' to fileOld
+    patch -u -b fileOld -i changes.patch    # Do the above and also create a backup of fileOld
 
 Handy Examples:
     # Search /.../words for pattern 'ie' (returns a lot!) - pipe to 'less' to paginate
