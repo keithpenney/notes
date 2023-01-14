@@ -110,4 +110,12 @@ Capture Groups:
         print(m.group(1))   # Prints 'Marbles'
         print(m.group(2))   # Prints '200'
 
+Handy Examples:
+---------------
+  # Extract IPv4 address
+  match = re.search('(\d+.\d+.\d+.\d+)', s)
+
+  # Extract optional index at the end of a string (i.e. '_3')
+  match = re.search('(_(\d+))$', s)
+
 
