@@ -118,4 +118,33 @@ Handy Examples:
   # Extract optional index at the end of a string (i.e. '_3')
   match = re.search('(_(\d+))$', s)
 
+  # Extract a function name and its args (works with easy args/kwargs, does't work too
+  # well with string literals)
+  def _extractCommand(cls, s):
+      # First, split into function, args
+      match = re.search("#(\w+)\(([^\)]*)\)", s)
+      function = None
+      args = []
+      if match:
+          groups = match.groups()
+          function, allArgs = groups
+          # Then, split up the args/kwargs
+          argList = re.split("([^,\"\']+|\"[^\"]*\"|\'[^\']*\')", allArgs)
+          args = []
+          kwargs = {}
+          for arg in argList:
+              if len(arg) > 0 and arg[0] != ',':
+                  if '=' in arg:
+                      name, val = arg.split('=')
+                      name = name.strip()
+                      val = val.strip()
+                      kwargs[name] = val
+                  else:
+                      args.append(arg)
+          print(f"function = {function}; args = {args}; kwargs = {kwargs}")
+      else:
+          print("No match")
+      return function, args, kwargs
+
+
 
