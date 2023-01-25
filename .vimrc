@@ -25,6 +25,10 @@ autocmd FileType python set shiftwidth=4
 set softtabstop=0
 set expandtab
 set smarttab
+" To return to using tabs, use: set noexpandtab
+
+command! T2 set tabstop=2 | set shiftwidth=2
+command! T4 set tabstop=4 | set shiftwidth=4
 
 " -------------- Vundle Plugin Manager Settings --------------
 " Install Vundle with:
@@ -76,7 +80,7 @@ endif
 if has('win32') || has('win64') || has('win32unix')
   let ctags_cmd = 'C:/toolchains/ctags/ctags.exe'
 else
-  let ctags_cmd = '/usr/local/bin/ctags'
+  let ctags_cmd = '/usr/bin/ctags'
 endif
 
 let _pgentags = 0
@@ -234,7 +238,15 @@ command! W :w
 
 "nmap <c-r> :call system(ctags_cmd . "-R .")<CR>
 
-  " Some plugin-specific key mappings
+  " Filter the current buffer through xxd to view it as in a hex editor
+command! Hexify %!xxd
+
+  " Create a function comment in C. Call on the line of the function
+  " definition and make sure there's no comment line directly above.
+command! J yyko/*<cr><cr>/<esc>kkp0i * <esc>A<bs><bs>;<esc>jA    
+
+  " = = = = = =  Some plugin-specific key mappings = = = = = = 
+
 if _pnerdtree
   " Display the NERDTree panel (if installed) with <leader>t
   nmap <silent> <leader>t :NERDTreeTabsToggle<CR>
