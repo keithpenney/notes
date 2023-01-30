@@ -138,6 +138,7 @@ Common Shell Commands:
     systemctl                   systemd introspection and control
     tar                         Archive (zip) or unarchive (unzip) a file.
                                 -z: zip; -c: create; -a: append
+    tee [OPTIONS] [FILE]        Read from stdin; write to both stdout and to file 'FILE' (often used with pipe)
     tr a-z A-Z                  Translate standard input.  Swap all lowercase chars (a-z) in stdin with uppercase (A-Z)
     umount PATH                 Unmount the device at PATH
     uname                       Print system information
@@ -1078,3 +1079,5 @@ Handy Examples:
     grep ie /usr/share/dict/words | less
     # Find recent messages regarding terminal devices (i.e. USB-to-Serial adapters)
     dmesg | grep tty
+    # Echo PATH with single path per line
+    echo $PATH | tr ':' '\n'
