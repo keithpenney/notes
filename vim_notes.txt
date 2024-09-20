@@ -145,7 +145,9 @@ y = "yank" (copy text hightlighted with v)
     yw = copy a single word
     yy = y$ = copy a single line
 
-p = "paste"; past text copied with y
+p = "paste"; paste text copied with y (or cut with x/d/D) after the cursor
+
+P = "Paste"; paste text copied with y (or cut with x/d/D) before the cursor
 
 u = undo last command
 
